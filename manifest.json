@@ -1,20 +1,35 @@
 {
+  "id": "/api-token-manager-pwa/",
   "name": "مدیر توکن‌های API",
   "short_name": "API Tokens",
   "description": "مدیریت امن و محلی توکن‌های API با قابلیت چک وضعیت",
-  "start_url": "./index.html",
+  "start_url": "/api-token-manager-pwa/",
+  "scope": "/api-token-manager-pwa/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "orientation": "any",
   "lang": "fa",
   "dir": "rtl",
+  "categories": ["utilities", "productivity"],
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔑</text></svg>",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/api-token-manager-pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/api-token-manager-pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/api-token-manager-pwa/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
