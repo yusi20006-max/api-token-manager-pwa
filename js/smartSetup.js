@@ -124,7 +124,7 @@ export async function discoverApiConfiguration(inputUrl, apiKey) {
   let providerName = providerId === 'zenmux' ? 'ZenMux' : getProviderProfile(providerId).name;
 
   const tempApi = {
-    providerId: providerId === 'zenmux' ? 'custom' : providerId, // adapter support
+    providerId,
     baseUrl: normalizedUrl,
     apiKey: apiKey || '',
     authType: authType
@@ -141,7 +141,7 @@ export async function discoverApiConfiguration(inputUrl, apiKey) {
 
   return {
     success: true,
-    providerId: providerId === 'zenmux' ? 'custom' : providerId,
+    providerId,
     providerName,
     baseUrl: tempApi.baseUrl,
     authType,

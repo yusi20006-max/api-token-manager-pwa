@@ -1,8 +1,20 @@
-const CACHE = 'api-token-manager-v1';
+const CACHE = 'api-token-manager-v2';
 const ASSETS = [
   './',
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './js/engine.js',
+  './js/contract.js',
+  './js/errors.js',
+  './js/registry.js',
+  './js/adapters.js',
+  './js/discovery.js',
+  './js/smartSetup.js',
+  './js/storage.js',
+  './js/score.js',
+  './js/capabilities.js',
+  './js/models.js',
+  './js/diagnostics.js'
 ];
 
 self.addEventListener('install', (e) => {

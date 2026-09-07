@@ -65,6 +65,21 @@ export const PROVIDERS = {
     testEndpoint: 'models',
     model: 'llama-3.3-70b-versatile',
     capabilities: { models: true, inference: true }
+  },
+  zenmux: {
+    id: 'zenmux',
+    name: 'ZenMux',
+    baseUrl: 'https://zenmux.ai/api/v1',
+    authType: 'bearer',
+    testEndpoint: 'models',
+    model: '',
+    protocol: 'openai-compatible',
+    endpoints: {
+      models: 'GET /models',
+      chat: 'POST /chat/completions',
+      responses: 'POST /responses'
+    },
+    capabilities: { models: true, inference: true }
   }
 };
 

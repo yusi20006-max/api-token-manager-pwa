@@ -3,6 +3,7 @@
  */
 
 import { getProviderProfile } from './registry.js';
+import { normalizeModelList } from './models.js';
 
 export function getAdapter(providerId) {
   const profile = getProviderProfile(providerId || 'custom');
@@ -91,16 +92,7 @@ export function getAdapter(providerId) {
         list = data.models;
       }
 
-      return list.map(m => {
-        const id = m.id || m.name || '';
-        const name = m.name || m.id || '';
-        return {
-          id: String(id),
-          name: String(name),
-          providerModelId: String(id),
-          available: true
-        };
-      }).filter(m => m.id);
+      return normalizeModelList(list, profile.id);
     },
 
     buildCurl(api) {
