@@ -13,6 +13,6 @@ test('adapter parses OpenAI/OpenRouter model list response', () => {
   const parsed = adapter.parseModelsResponse(rawData);
   assert.strictEqual(parsed.length, 2);
   assert.strictEqual(parsed[0].id, 'gpt-4o');
-  assert.strictEqual(parsed[1].name, 'GPT-4o Mini');
+  assert.strictEqual(parsed[1].displayName, 'GPT-4o Mini');
   assert.strictEqual(parsed[0].available, true);
 });

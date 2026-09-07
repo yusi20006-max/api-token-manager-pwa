@@ -17,11 +17,11 @@ test('provider registry has custom and known providers', () => {
 
 test('adapter builds request and curl correctly without exposing token in logs', () => {
   const adapter = getAdapter('openai');
-  const req = adapter.buildRequest({ baseUrl: 'https://api.openai.com/v1', apiKey: 'sk-secret123', authType: 'bearer' });
-  assert.strictEqual(req.headers['Authorization'], 'Bearer sk-secret123');
+  const req = adapter.buildRequest({ baseUrl: 'https://api.openai.com/v1', apiKey: 'TEST-PLACEHOLDER-KEY', authType: 'bearer' });
+  assert.strictEqual(req.headers['Authorization'], 'Bearer TEST-PLACEHOLDER-KEY');
   assert.ok(req.url.includes('models'));
 
-  const curl = adapter.buildCurl({ baseUrl: 'https://api.openai.com/v1', apiKey: 'sk-secret123', authType: 'bearer' });
+  const curl = adapter.buildCurl({ baseUrl: 'https://api.openai.com/v1', apiKey: 'TEST-PLACEHOLDER-KEY', authType: 'bearer' });
   assert.ok(curl.includes('curl -sS'));
-  assert.ok(curl.includes('Authorization: Bearer sk-secret123'));
+  assert.ok(curl.includes('Authorization: Bearer TEST-PLACEHOLDER-KEY'));
 });
