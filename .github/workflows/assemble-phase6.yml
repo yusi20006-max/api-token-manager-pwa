@@ -1,0 +1,22 @@
+name: assemble-phase6
+on:
+  workflow_dispatch:
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble index.html from parts
+        run: |
+          git config user.name "Yousef"
+          git config user.email "yusi20006@gmail.com"
+          cat .phase6/index.part0 .phase6/index.part1 .phase6/index.part2 > index.html
+          grep -q token-row index.html
+          grep -q statusChips index.html
+          git add index.html
+          git commit -m "Phase 6: Compact Token Dashboard & Progressive Disclosure
+
+Closes #10"
+          git push origin HEAD:main
