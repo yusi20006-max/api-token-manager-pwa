@@ -257,7 +257,7 @@ function statusLabelFa(key) {
   return { healthy: 'سالم', failed: 'خطا', curl: 'نیاز به CURL', partial: 'نیمه‌سالم', unknown: 'تست‌نشده', checking: 'در حال چک' }[key] || 'نامشخص';
 }
 
-function toggleDetails(id) {
+window.toggleDetails = function toggleDetails(id) {
   const el = document.getElementById('details-' + id);
   if (!el) return;
   const wasOpen = el.classList.contains('open');
