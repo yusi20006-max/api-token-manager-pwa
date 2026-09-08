@@ -1,0 +1,15 @@
+name: apply-phase6
+on:
+  workflow_dispatch:
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply Phase 6 from local artifact via curl of raw original+note
+        run: |
+          git config user.name "Yousef"
+          git config user.email "yusi20006@gmail.com"
+          echo "placeholder - will update"
