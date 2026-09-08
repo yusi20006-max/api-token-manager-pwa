@@ -1,0 +1,20 @@
+name: restore-index
+on:
+  workflow_dispatch:
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore index.html from d7143ca
+        run: |
+          git config user.name "Yousef"
+          git config user.email "yusi20006@gmail.com"
+          git show d7143cae67b3874d4e5106f48171c3b3ac0daa69:index.html > index.html
+          git add index.html
+          git commit -m "Restore index.html to pre-breakage state" || exit 0
+          git push origin HEAD:main
