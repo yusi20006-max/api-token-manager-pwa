@@ -19,8 +19,7 @@ test('details button is wired to a global handler from the ES module bridge', as
         remove: c => classes.delete(c)
       },
       textContent: 'مشخصات',
-      attrs: {},
-      setAttribute: (k, v) => { this; },
+      setAttribute(k, v) { this[k] = v; },
       _classes: classes
     };
   };
@@ -40,7 +39,7 @@ test('details button is wired to a global handler from the ES module bridge', as
       return null;
     }
   };
-  globalThis.window = {};
+  globalThis.window = { addEventListener() {} };
 
   const mod = await import('../js/storage.js?details-regression=' + Date.now());
   assert.equal(typeof mod.toggleDetails, 'function');

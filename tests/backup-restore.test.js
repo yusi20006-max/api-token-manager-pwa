@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { MAX_HISTORY, extractImportRecords, restoreApisFromPayload, toExportPayload } from '../js/storage.js';
+import { MAX_HISTORY, extractImportRecords, parseRestoreFileText, restoreApisFromPayload, toExportPayload } from '../js/storage.js';
 
 function realisticApi() {
   return {
@@ -54,6 +54,39 @@ test('full export -> array restore preserves API and secret', () => {
   assert.deepStrictEqual(restored[0].history, source.history);
 });
 
+test('real export JSON text -> restore preserves the full record', () => {
+  const source = realisticApi();
+  const exportedText = JSON.stringify(toExportPayload([source], { includeSecrets: true }));
+  const restored = parseRestoreFileText(exportedText);
+
+  assert.strictEqual(restored.length, 1);
+  assert.strictEqual(restored[0].id, source.id);
+  assert.strictEqual(restored[0].apiKey, source.apiKey);
+  assert.deepStrictEqual(restored[0].discoveredModels, source.discoveredModels);
+  assert.deepStrictEqual(restored[0].history, source.history);
+});
+
+test('restore accepts common export wrappers and nested JSON text', () => {
+  const records = [realisticApi(), { ...realisticApi(), id: 'second', name: 'Second' }];
+  const exportedText = JSON.stringify(records);
+
+  for (const payload of [
+    { apis: records },
+    { tokens: records },
+    { items: records },
+    { records },
+    { apiTokens: records },
+    { data: records },
+    { data: { apis: records } },
+    { payload: { data: JSON.stringify({ apis: records }) } },
+    { backup: JSON.stringify(records) }
+  ]) {
+    assert.strictEqual(restoreApisFromPayload(payload).length, 2);
+  }
+
+  assert.strictEqual(parseRestoreFileText(JSON.stringify({ data: exportedText })).length, 2);
+});
+
 test('wrapped backups restore without dropping records', () => {
   const records = [realisticApi(), { ...realisticApi(), id: 'second', name: 'Second' }];
   assert.strictEqual(extractImportRecords({ apis: records }).length, 2);
@@ -68,8 +101,6 @@ test('restore validation is filename-independent', () => {
   const arbitraryFilenames = ['backup.json', 'test.json', 'anything.json', 'my-api-data.json', '123.json'];
 
   for (const filename of arbitraryFilenames) {
-    // The restore parser receives file contents, not the filename. This explicitly
-    // documents the contract that renaming a valid JSON backup cannot affect restore.
     const parsed = JSON.parse(backup);
     const restored = restoreApisFromPayload(parsed);
     assert.strictEqual(restored.length, 1, `restore failed for ${filename}`);
@@ -77,7 +108,9 @@ test('restore validation is filename-independent', () => {
   }
 });
 
-test('invalid or empty payload is rejected before state replacement', () => {
+test('invalid JSON and unsupported payloads are rejected distinctly', () => {
+  assert.throws(() => parseRestoreFileText('{not-json'), /INVALID_JSON/);
+  assert.throws(() => parseRestoreFileText(''), /INVALID_JSON/);
   for (const payload of [null, {}, { apis: [] }, [], { apis: [null] }, { apis: 'not-an-array' }]) {
     assert.throws(() => restoreApisFromPayload(payload), /NO_SUPPORTED_API_RECORDS/);
   }
