@@ -18,43 +18,606 @@ main{max-width:920px;margin:0 auto;padding:16px 16px 80px}.toolbar{display:flex;
 .search-box{flex:1;min-width:160px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;font-size:.9rem}
 .auto-box{display:flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:.85rem}
 .auto-box select{background:var(--bg-input);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:.8rem}
-.cards{display:grid;gap:8px}.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:0;box-shadow:var(--shadow);overflow:hidden}.card.status-healthy,.card.status-ok{border-color:color-mix(in srgb,var(--success) 45%,var(--border))}.card.status-failed,.card.status-error{border-color:color-mix(in srgb,var(--danger) 45%,var(--border))}.card.status-partial,.card.status-curl{border-color:color-mix(in srgb,var(--warning) 45%,var(--border))}.card.status-checking,.card.status-unknown{border-color:var(--border)}
-.token-row{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:default;min-height:52px}
-.token-status{font-size:1.15rem;line-height:1;flex-shrink:0;width:1.4em;text-align:center}
-.token-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.token-name{font-size:.95rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.token-sub{font-size:.72rem;color:var(--text-muted);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.token-actions{display:flex;gap:6px;flex-shrink:0;align-items:center}
+.cards{display:grid;gap:14px}.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}.card.status-healthy,.card.status-ok{border-color:color-mix(in srgb,var(--success) 45%,var(--border))}.card.status-failed,.card.status-error{border-color:color-mix(in srgb,var(--danger) 45%,var(--border))}.card.status-partial{border-color:color-mix(in srgb,var(--warning) 45%,var(--border))}.card.status-checking{border-color:color-mix(in srgb,var(--warning) 45%,var(--border))}
 .card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}.card-title{font-size:1.02rem;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.badge{font-size:.68rem;padding:2px 8px;border-radius:999px;font-weight:600}.badge-healthy,.badge-ok{background:color-mix(in srgb,var(--success) 20%,transparent);color:var(--success)}.badge-failed,.badge-error{background:color-mix(in srgb,var(--danger) 20%,transparent);color:var(--danger)}.badge-partial,.badge-curl{background:color-mix(in srgb,var(--warning) 20%,transparent);color:var(--warning)}.badge-unknown{background:color-mix(in srgb,var(--text-muted) 20%,transparent);color:var(--text-muted)}.badge-checking{background:color-mix(in srgb,var(--warning) 20%,transparent);color:var(--warning)}
-.card-details{padding:0 12px 12px;border-top:1px solid var(--border);display:none}.card-details.open{display:block;padding-top:10px}
+.badge{font-size:.68rem;padding:2px 8px;border-radius:999px;font-weight:600}.badge-healthy,.badge-ok{background:color-mix(in srgb,var(--success) 20%,transparent);color:var(--success)}.badge-failed,.badge-error{background:color-mix(in srgb,var(--danger) 20%,transparent);color:var(--danger)}.badge-partial{background:color-mix(in srgb,var(--warning) 20%,transparent);color:var(--warning)}.badge-unknown{background:color-mix(in srgb,var(--text-muted) 20%,transparent);color:var(--text-muted)}.badge-checking{background:color-mix(in srgb,var(--warning) 20%,transparent);color:var(--warning)}
 .card-meta{font-size:.78rem;color:var(--text-muted);margin-bottom:8px;display:flex;flex-wrap:wrap;gap:10px}.field-row{display:flex;gap:8px;margin-bottom:7px;align-items:center}.field-label{font-size:.72rem;color:var(--text-muted);min-width:68px}.field-value{flex:1;background:var(--bg-input);border-radius:6px;padding:5px 10px;font-size:.82rem;font-family:ui-monospace,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;text-align:left}
 .card-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}.last-msg{font-size:.78rem;margin-top:8px;padding:7px 10px;border-radius:6px;background:var(--bg-input);color:var(--text-muted);word-break:break-word}
 .history{margin-top:10px;border-top:1px dashed var(--border);padding-top:8px}.history summary{cursor:pointer;font-size:.8rem;color:var(--text-muted)}.history-list{margin-top:6px;font-size:.75rem;color:var(--text-muted);max-height:160px;overflow-y:auto}.history-item{display:flex;gap:8px;padding:3px 0;border-bottom:1px solid color-mix(in srgb,var(--border) 60%,transparent)}.hist-ok{color:var(--success)}.hist-err{color:var(--danger)}
 .model-section{margin-top:10px;background:var(--bg-input);padding:8px 10px;border-radius:8px;font-size:.8rem}.model-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;max-height:120px;overflow-y:auto}.model-chip{background:var(--bg-card);border:1px solid var(--border);padding:3px 8px;border-radius:6px;font-size:0.75rem;cursor:pointer;font-family:monospace}.model-chip:hover{border-color:var(--primary);color:var(--primary)}
 .smart-box{background:color-mix(in srgb,var(--primary) 12%,var(--bg-input));border:1px dashed var(--primary);padding:10px;border-radius:8px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.dashboard{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;font-size:.82rem}.dash-grid{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}.dash-item{background:var(--bg-input);border-radius:8px;padding:6px 12px;min-width:110px}.diag{background:var(--bg-input);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:.76rem;color:var(--text-muted)}.diag-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px 12px;margin-top:4px}.score{font-weight:700;font-size:.85rem}
-.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}.filters select{background:var(--bg-card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-family:inherit;font-size:.8rem}
-.status-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.status-chip{background:var(--bg-card);border:1px solid var(--border);border-radius:999px;padding:4px 12px;font-size:.78rem;cursor:pointer;color:var(--text-muted);user-select:none}.status-chip:hover{border-color:var(--primary);color:var(--text)}.status-chip.active{background:color-mix(in srgb,var(--primary) 18%,var(--bg-card));border-color:var(--primary);color:var(--text);font-weight:600}
+.dashboard{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;font-size:.82rem}.dash-grid{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}.dash-item{background:var(--bg-input);border-radius:8px;padding:6px 12px;min-width:110px}.diag{background:var(--bg-input);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:.76rem;color:var(--text-muted)}.diag-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px 12px;margin-top:4px}.score{font-weight:700;font-size:.85rem}.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.filters select{background:var(--bg-card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-family:inherit;font-size:.8rem}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;opacity:0;visibility:hidden;transition:all .2s}.modal-overlay.open{opacity:1;visibility:visible}
 .modal{background:var(--bg-card);border-radius:var(--radius);width:100%;max-width:480px;max-height:90dvh;overflow-y:auto;padding:20px;border:1px solid var(--border);box-shadow:var(--shadow)}.modal h2{font-size:1.15rem;margin-bottom:14px}.form-group{margin-bottom:13px}.form-group label{display:block;font-size:.84rem;margin-bottom:4px;color:var(--text-muted)}.form-group input,.form-group textarea,.form-group select{width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:.9rem}.form-group textarea{min-height:64px;resize:vertical}.form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
 .empty{text-align:center;padding:50px 20px;color:var(--text-muted)}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg-card);border:1px solid var(--border);padding:12px 20px;border-radius:10px;box-shadow:var(--shadow);z-index:200;transition:transform .3s;font-size:.9rem}.toast.show{transform:translateX(-50%) translateY(0)}.footer-note{text-align:center;font-size:.72rem;color:var(--text-muted);margin-top:36px;padding:0 12px}
-@media(max-width:520px){
-  .header h1{font-size:.95rem}
-  .field-row{flex-direction:column;align-items:stretch}
-  .field-label{min-width:auto}
-  .token-row{padding:8px 10px;gap:8px;min-height:48px}
-  .token-name{font-size:.9rem}
-  .token-sub{font-size:.68rem;gap:4px}
-  .token-actions{flex-direction:column;gap:4px}
-  .token-actions .btn-sm{padding:4px 8px;font-size:.75rem}
-  .status-chips{gap:4px}
-  .status-chip{padding:3px 8px;font-size:.72rem}
-  .cards{gap:6px}
-}
+@media(max-width:520px){.header h1{font-size:.95rem}.field-row{flex-direction:column;align-items:stretch}.field-label{min-width:auto}}
 </style>
 </head>
 <body>
-<!-- PHASE6_PART1_OK -->
+<header class="header">
+  <h1>🔑 مدیر توکن‌های API و سنجش سلامت</h1>
+  <div class="clock" id="clock">--:--:--</div>
+  <div class="header-actions">
+    <button class="btn-ghost btn-sm" id="themeBtn" title="تغییر تم">🌅</button>
+    <button class="btn-ghost btn-sm" id="exportBtn" title="خروجی JSON">⬇️</button>
+    <button class="btn-ghost btn-sm" id="importBtn" title="ورودی JSON">⬆️</button>
+  </div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <input type="search" class="search-box" id="searchInput" placeholder="جستجو در APIها..."/>
+    <button class="btn-primary" id="addBtn">＋ افزودن API</button>
+    <button class="btn-ghost" id="checkAllBtn">✓ چک همه</button>
+    <div class="auto-box">
+      <button class="btn-ghost btn-sm" id="autoBtn">⏱ خودکار</button>
+      <select id="autoInterval">
+        <option value="5">۵ دقیقه</option>
+        <option value="15" selected>۱۵ دقیقه</option>
+        <option value="30">۳۰ دقیقه</option>
+        <option value="60">۶۰ دقیقه</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="dashboard" id="dashboard"><strong>📊 API Health Dashboard</strong><div class="dash-grid" id="dashGrid"></div></div>
+  <div class="filters">
+    <select id="filterProvider"><option value="">همه ارائه‌دهنده‌ها</option><option value="custom">Custom</option><option value="zenmux">ZenMux</option><option value="openai">OpenAI</option><option value="anthropic">Anthropic</option><option value="openrouter">OpenRouter</option><option value="deepseek">DeepSeek</option><option value="google">Google</option><option value="groq">Groq</option></select>
+    <select id="filterStatus"><option value="">همه وضعیت‌ها</option><option value="healthy">سالم</option><option value="partial">نیمه‌سالم</option><option value="failed">خطا</option><option value="unknown">نامشخص</option></select>
+  </div>
+  <div class="cards" id="cards"></div>
+  <div class="empty" id="emptyState" style="display:none">
+    <div style="font-size:2.8rem">🗝️</div>
+    <p>هنوز هیچ API ثبت نشده است.</p>
+  </div>
+  <p class="footer-note">داده‌ها محلی هستند. برای دورزدن محدودیت CORS می‌توانید از دستور curl استفاده کنید.</p>
+</main>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2 id="modalTitle">افزودن API</h2>
+    <div class="smart-box">
+      <div style="font-size:0.85rem">
+        <strong>⚡ تشخیص هوشمند (Smart Setup)</strong>
+        <div style="font-size:0.75rem;color:var::var(--text-muted);margin-top:2px">آدرس و کلید را وارد کنید و تشخیص خودکار را بزنید.</div>
+      </div>
+      <button type="button" class="btn-primary btn-sm" id="smartDetectBtn">🔍 تشخیص خودکار</button>
+    </div>
+    <form id="apiForm">
+      <input type="hidden" id="editId"/>
+      <div class="form-group">
+        <label for="providerId">انتخاب ارائه‌دهنده</label>
+        <select id="providerId">
+          <option value="custom">سفارشی (Custom)</option>
+          <option value="zenmux">ZenMux</option>
+          <option value="openai">OpenAI</option>
+          <option value="anthropic">Anthropic (Claude)</option>
+          <option value="openrouter">OpenRouter</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="google">Google Gemini</option>
+          <option value="groq">Groq</option>
+        </select>
+      </div>
+      <div class="form-group"><label for="name">نام *</label><input type="text" id="name" required placeholder="OpenAI / ZenMux"/></div>
+      <div class="form-group"><label for="baseUrl">Base URL *</label><input type="url" id="baseUrl" required placeholder="https://zenmux.ai/api/v1" dir="ltr"/></div>
+      <div class="form-group"><label for="apiKey">API Key *</label><input type="password" id="apiKey" required placeholder="sk-..." dir="ltr" autocomplete="off"/></div>
+      <div class="form-group">
+        <label for="authType">روش احراز هویت</label>
+        <select id="authType">
+          <option value="bearer">Bearer</option>
+          <option value="x-api-key">x-api-key</option>
+          <option value="query">Query</option>
+          <option value="none">بدون</option>
+        </select>
+      </div>
+      <div class="form-group"><label for="model">مدل هوش مصنوعی (اختیاری)</label><input type="text" id="model" placeholder="gpt-4o-mini / gemini-2.5-flash" dir="ltr"/></div>
+      <div class="form-group"><label for="testEndpoint">آدرس تست (اختیاری)</label><input type="text" id="testEndpoint" placeholder="models" dir="ltr"/></div>
+      <div class="form-group"><label for="notes">یادداشت</label><textarea id="notes"></textarea></div>
+      <div class="form-actions">
+        <button type="button" class="btn-ghost" id="cancelBtn">انصراف</button>
+        <button type="submit" class="btn-primary">ذخیره</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { checkApi } from './js/engine.js';
+import { discoverModels } from './js/discovery.js';
+import { getProviderProfile, listProviders } from './js/registry.js';
+import { getAdapter } from './js/adapters.js';
+import { discoverApiConfiguration, normalizeBaseUrl } from './js/smartSetup.js';
+import { normalizeApiEntry, sanitizeHistoryEntry, toExportPayload, STORAGE_KEY, MAX_HISTORY, uid } from './js/storage.js';
+import { computeHealthScore } from './js/score.js';
+import { buildCapabilityMatrix } from './js/capabilities.js';
+import { buildDiagnostics } from './js/diagnostics.js';
+
+let apis = [], editId = null, autoTimer = null, autoEnabled = false;
+
+const $ = s => document.querySelector(s);
+function toast(m, ms = 2200) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), ms); }
+function formatTime(ts) { if (!ts) return '—'; return new Date(ts).toLocaleString('fa-IR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+function formatShortTime(ts) { if (!ts) return '—'; return new Date(ts).toLocaleString('fa-IR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+function maskKey(k) { if (!k || k.length < 8) return '••••••••'; return k.slice(0, 4) + '••••' + k.slice(-4); }
+
+function updateClock() { $('#clock').textContent = new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+setInterval(updateClock, 1000); updateClock();
+
+function load() {
+  try {
+    const r = localStorage.getItem(STORAGE_KEY);
+    apis = r ? JSON.parse(r) : [];
+    apis = apis.map(normalizeApiEntry);
+  } catch { apis = []; }
+
+  const s = localStorage.getItem('atm-auto');
+  if (s) {
+    try {
+      const o = JSON.parse(s);
+      autoEnabled = !!o.enabled;
+      if (o.interval) $('#autoInterval').value = String(o.interval);
+    } catch {}
+  }
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(apis));
+  localStorage.setItem('atm-auto', JSON.stringify({ enabled: autoEnabled, interval: Number($('#autoInterval').value) || 15 }));
+}
+
+function initTheme() {
+  if ((localStorage.getItem('atm-theme') || 'dark') === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+}
+
+$('#themeBtn').onclick = () => {
+  const l = document.documentElement.getAttribute('data-theme') === 'light';
+  if (l) {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('atm-theme', 'dark');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light');
+    localStorage.setItem('atm-theme', 'light');
+  }
+};
+
+function authLabel(t) {
+  return { bearer: 'Bearer', 'x-api-key': 'x-api-key', query: 'Query', none: 'بدون' }[t] || t;
+}
+
+function escapeHtml(s) { if (!s) return ''; return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
+
+function renderDashboard(list) {
+  const g = $('#dashGrid');
+  if (!g) return;
+  const total = apis.length;
+  const healthy = apis.filter(a => a.status === 'healthy').length;
+  const warning = apis.filter(a => a.status === 'partial' || a.status === 'checking').length;
+  const failed = apis.filter(a => a.status === 'failed' || a.status === 'error').length;
+  const lats = apis.map(a => a.lastLatency).filter(v => typeof v === 'number');
+  const avg = lats.length ? Math.round(lats.reduce((s, v) => s + v, 0) / lats.length) + ' ms' : '—';
+  const last = apis.map(a => a.lastChecked).filter(Boolean);
+  const lastStr = last.length ? formatShortTime(Math.max(...last)) : '—';
+  g.innerHTML = `<div class="dash-item">Total: <strong>${total}</strong></div><div class="dash-item">Healthy: <strong>${healthy}</strong></div><div class="dash-item">Warning: <strong>${warning}</strong></div><div class="dash-item">Failed: <strong>${failed}</strong></div><div class="dash-item">Avg latency: <strong>${avg}</strong></div><div class="dash-item">Last checked: <strong>${lastStr}</strong></div>`;
+}
+
+function render() {
+  const q = ($('#searchInput').value || '').trim().toLowerCase();
+  const fp = ($('#filterProvider') || {}).value || '';
+  const fs = ($('#filterStatus') || {}).value || '';
+  const f = apis.filter(a => {
+    const okQ = !q || (a.name || '').toLowerCase().includes(q) || (a.baseUrl || '').toLowerCase().includes(q) || (a.notes || '').toLowerCase().includes(q) || (a.model || '').toLowerCase().includes(q);
+    const okP = !fp || (a.providerId || 'custom') === fp;
+    const okS = !fs || (a.status || 'unknown') === fs;
+    return okQ && okP && okS;
+  });
+  renderDashboard(f);
+  const c = $('#cards'), e = $('#emptyState');
+
+  if (!f.length) {
+    c.innerHTML = '';
+    e.style.display = 'block';
+    e.querySelector('p').innerHTML = apis.length ? 'نتیجه‌ای یافت نشد.' : 'هنوز هیچ API ثبت نشده است.';
+    return;
+  }
+  e.style.display = 'none';
+
+  c.innerHTML = f.map(api => {
+    const st = api.status || 'unknown';
+    const statusLabels = { healthy: 'سالم', partial: 'نیمه سالم', failed: 'خطا', checking: 'در حال چک', unknown: 'نامشخص' };
+    const bt = statusLabels[st] || 'نامشخص';
+    const lat = api.lastLatency != null ? api.lastLatency + ' ms' : '—';
+    const hist = (api.history || []).slice().reverse();
+
+    const histHtml = hist.length ? `
+      <details class="history">
+        <summary>تاریخچه (${hist.length})</summary>
+        <div class="history-list">
+          ${hist.map(h => `
+            <div class="history-item">
+              <span class="${h.status === 'healthy' || h.status === 'ok' ? 'hist-ok' : 'hist-err'}">${h.status === 'healthy' || h.status === 'ok' ? '✓' : '✗'}</span>
+              <span>${formatShortTime(h.time || h.checkedAt)}</span>
+              <span>${h.latencyMs != null ? h.latencyMs + 'ms' : (h.latency != null ? h.latency + 'ms' : '—')}</span>
+              <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml((h.errorMessage || h.message || '').slice(0, 60))}</span>
+            </div>
+          `).join('')}
+        </div>
+      </details>` : '';
+
+    const disc = api.discoveredModels || [];
+    const modelsSection = disc.length ? `
+      <div class="model-section">
+        <div style="font-size:0.75rem;color:var(--text-muted);display:flex;justify-content:space-between">
+          <span>📦 مدل‌های کشف‌شده (${disc.length}):</span>
+          <span>برای انتخاب کلیک کنید</span>
+        </div>
+        <div class="model-list">
+          ${disc.map(m => `<span class="model-chip" onclick="selectModel('${api.id}', '${escapeAttr(m.id)}')">${escapeHtml(m.id)}</span>`).join('')}
+        </div>
+      </div>
+    ` : '';
+
+    const scoreTxt = typeof api.healthScore === 'number' ? ` | امتیاز سلامت: ${api.healthScore}/100` : '';
+    const caps = api.capabilities || {};
+    const capsTxt = caps.models ? ` | مدل‌ها: ${caps.models}` : '';
+    const diag = api._diag;
+    const diagHtml = diag ? `<details class="diag"><summary>🩺 Diagnostics${typeof diag.healthScore === 'number' ? ` (${diag.healthScore}/100)` : ''}</summary><div class="diag-grid"><span>Provider: ${escapeHtml(diag.provider)}</span><span>Auth: ${escapeHtml(diag.authentication)}</span><span>Connectivity: ${escapeHtml(diag.connectivity)}</span><span>HTTP: ${diag.httpStatus ?? '—'}</span><span>Error: ${escapeHtml(diag.errorCode || '—')}</span><span>Models: ${diag.models}</span><span>CORS: ${escapeHtml(diag.cors)}</span><span>Latency: ${diag.latencyMs ?? '—'}${diag.latencyMs != null ? ' ms' : ''}</span></div></details>` : '';
+
+    return `
+      <article class="card status-${st}">
+        <div class="card-header">
+          <div class="card-title">
+            ${escapeHtml(api.name)}
+            <span class="badge badge-${st}">${bt}</span>
+            <span style="font-size:0.7rem;color:var(--text-muted)">(${escapeHtml(api.providerId || 'custom')})</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn-ghost btn-sm" onclick="editApi('${api.id}')">ویرایش</button>
+            <button class="btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteApi('${api.id}')">حذف</button>
+          </div>
+        </div>
+        <div class="card-meta">
+          <span>آخرین چک: ${formatTime(api.lastChecked)}</span>
+          <span>تأخیر: ${lat}</span>
+          <span>احراز: ${authLabel(api.authType || 'bearer')}</span>
+          ${api.model ? `<span>مدل فعال: ${escapeHtml(api.model)}</span>` : ''}
+          ${scoreTxt ? `<span class="score">${escapeHtml(scoreTxt)}</span>` : ''}
+          ${capsTxt ? `<span>${escapeHtml(capsTxt)}</span>` : ''}
+        </div>
+        <div class="field-row">
+          <span class="field-label">Base URL</span>
+          <div class="field-value">${escapeHtml(api.baseUrl)}</div>
+          <button class="btn-ghost btn-sm" onclick="copyText('${escapeAttr(api.baseUrl)}')">کپی</button>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Token</span>
+          <div class="field-value" id="key-${api.id}">${maskKey(api.apiKey)}</div>
+          <button class="btn-ghost btn-sm" onclick="toggleKey('${api.id}')">👁</button>
+          <button class="btn-ghost btn-sm" onclick="copyText('${escapeAttr(api.apiKey)}')">کپی</button>
+        </div>
+        ${api.notes ? `<div class="card-meta">📝 ${escapeHtml(api.notes)}</div>` : ''}
+        ${api.lastMessage ? `<div class="last-msg">${escapeHtml(api.lastMessage)}</div>` : ''}
+        ${modelsSection}
+        ${diagHtml}
+        ${histHtml}
+        <div class="card-actions">
+          <button class="btn-primary btn-sm" onclick="checkOne('${api.id}')">چک کردن</button>
+          <button class="btn-ghost btn-sm" onclick="discoverOne('${api.id}')">🔍 کشف مدل‌ها</button>
+          <button class="btn-ghost btn-sm" onclick="copyCurl('${api.id}')">📋 کپی curl</button>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+function openModal(id = null) {
+  editId = id;
+  $('#apiForm').reset();
+  $('#editId').value = '';
+  $('#providerId').value = 'custom';
+  $('#authType').value = 'bearer';
+
+  if (id) {
+    const api = apis.find(a => a.id === id);
+    if (!api) return;
+    $('#modalTitle').textContent = 'ویرایش API';
+    $('#editId').value = id;
+    $('#providerId').value = api.providerId || 'custom';
+    $('#name').value = api.name || '';
+    $('#baseUrl').value = api.baseUrl || '';
+    $('#apiKey').value = api.apiKey || '';
+    $('#authType').value = api.authType || 'bearer';
+    $('#model').value = api.model || '';
+    $('#testEndpoint').value = api.testEndpoint || '';
+    $('#notes').value = api.notes || '';
+  } else {
+    $('#modalTitle').textContent = 'افزودن API';
+  }
+  $('#modal').classList.add('open');
+  $('#name').focus();
+}
+
+function closeModal() { $('#modal').classList.remove('open'); editId = null; }
+
+$('#addBtn').onclick = () => openModal();
+$('#cancelBtn').onclick = closeModal;
+$('#modal').onclick = e => { if (e.target === $('#modal')) closeModal(); };
+
+$('#providerId').onchange = () => {
+  const pid = $('#providerId').value;
+  const profile = getProviderProfile(pid);
+  if (pid !== 'custom') {
+    if (!$('#name').value) $('#name').value = profile.name;
+    if (!$('#baseUrl').value || $('#baseUrl').value.includes('api.')) $('#baseUrl').value = profile.baseUrl;
+    $('#authType').value = profile.authType || 'bearer';
+    if (!$('#model').value) $('#model').value = profile.model || '';
+    if (!$('#testEndpoint').value) $('#testEndpoint').value = profile.testEndpoint || '';
+  }
+};
+
+$('#smartDetectBtn').onclick = async () => {
+  const rawUrl = $('#baseUrl').value.trim() || $('#name').value.trim();
+  const apiKey = $('#apiKey').value.trim();
+
+  if (!rawUrl) {
+    toast('لطفاً آدرس URL یا نام ارائه‌دهنده را وارد کنید.');
+    $('#baseUrl').focus();
+    return;
+  }
+  if (!apiKey) {
+    toast('لطفاً کلید API را وارد کنید.');
+    $('#apiKey').focus();
+    return;
+  }
+
+  toast('در حال تشخیص هوشمند و کشف مدل‌ها...');
+  const res = await discoverApiConfiguration(rawUrl, apiKey);
+  if (res.success) {
+    $('#providerId').value = res.providerId || 'custom';
+    $('#name').value = res.providerName || 'API هوشمند';
+    $('#baseUrl').value = res.baseUrl;
+    $('#authType').value = res.authType;
+    if (res.discoveredModels && res.discoveredModels.length > 0) {
+      if (!$('#model').value) {
+        $('#model').value = res.discoveredModels[0].id;
+      }
+    }
+    toast(`✓ شناسایی موفق: ${res.providerName} (${res.discoveredModels.length} مدل کشف شد)`);
+  } else {
+    toast(`✗ تشخیص خودکار ناموفق: ${res.message || 'خطا'}`);
+  }
+};
+
+$('#apiForm').onsubmit = e => {
+  e.preventDefault();
+  const data = {
+    providerId: $('#providerId').value || 'custom',
+    name: $('#name').value.trim(),
+    baseUrl: normalizeBaseUrl($('#baseUrl').value.trim()) || $('#baseUrl').value.trim().replace(/\/$/, ''),
+    apiKey: $('#apiKey').value.trim(),
+    authType: $('#authType').value || 'bearer',
+    model: $('#model').value.trim(),
+    testEndpoint: $('#testEndpoint').value.trim(),
+    notes: $('#notes').value.trim()
+  };
+
+  if (!data.name || !data.baseUrl || !data.apiKey) {
+    toast('لطفاً فیلدهای ضروری را پر کنید.');
+    return;
+  }
+
+  const id = $('#editId').value;
+  if (id) {
+    const i = apis.findIndex(a => a.id === id);
+    if (i !== -1) apis[i] = { ...apis[i], ...data };
+  } else {
+    apis.unshift({
+      id: uid(),
+      ...data,
+      status: 'unknown',
+      lastChecked: null,
+      lastMessage: null,
+      lastLatency: null,
+      discoveredModels: [],
+      history: [],
+      createdAt: Date.now()
+    });
+  }
+
+  save(); render(); closeModal();
+  toast(id ? 'API ویرایش شد.' : 'API افزوده شد.');
+};
+
+window.editApi = id => openModal(id);
+window.deleteApi = id => {
+  if (!confirm('آیا از حذف این API مطمئن هستید؟')) return;
+  apis = apis.filter(a => a.id !== id);
+  save(); render();
+  toast('حذف شد.');
+};
+
+window.toggleKey = id => {
+  const api = apis.find(a => a.id === id);
+  if (!api) return;
+  const el = document.getElementById('key-' + id);
+  if (!el) return;
+  if (el.dataset.shown === '1') {
+    el.textContent = maskKey(api.apiKey);
+    el.dataset.shown = '0';
+  } else {
+    el.textContent = api.apiKey;
+    el.dataset.shown = '1';
+  }
+};
+
+window.copyText = async t => {
+  try { await navigator.clipboard.writeText(t); toast('در کلیپ‌بورد کپی شد.'); } catch { toast('کپی ناموفق بود.'); }
+};
+
+window.copyCurl = async id => {
+  const api = apis.find(a => a.id === id);
+  if (!api) return;
+  const adapter = getAdapter(api.providerId || 'custom');
+  const cmd = adapter.buildCurl(api);
+  try { await navigator.clipboard.writeText(cmd); toast('دستور curl کپی شد.'); } catch { toast('کپی ناموفق بود.'); }
+};
+
+window.selectModel = (id, modelName) => {
+  const api = apis.find(a => a.id === id);
+  if (!api) return;
+  api.model = modelName;
+  save(); render();
+  toast(`مدل «${modelName}» انتخاب شد.`);
+};
+
+async function performCheck(api) {
+  api.status = 'checking';
+  api.lastMessage = 'در حال سنجش سلامت...';
+  render();
+
+  const result = await checkApi(api);
+  api.status = result.status;
+  api.lastMessage = result.errorMessage;
+  api.lastLatency = result.latencyMs;
+  api.lastChecked = Date.now();
+  api.health = { reachable: result.reachable, authenticated: result.authenticated, httpStatus: result.httpStatus, latencyMs: result.latencyMs, errorCode: result.errorCode, checkedAt: result.checkedAt, capabilities: result.capabilities };
+
+  if (!api.history) api.history = [];
+  api.history.push(sanitizeHistoryEntry({
+    checkedAt: result.checkedAt,
+    time: Date.now(),
+    status: result.status,
+    errorMessage: result.errorMessage,
+    latencyMs: result.latencyMs,
+    httpStatus: result.httpStatus,
+    errorCode: result.errorCode,
+    providerId: api.providerId,
+    model: api.model
+  }));
+  if (api.history.length > MAX_HISTORY) api.history = api.history.slice(-MAX_HISTORY);
+
+  const sc = computeHealthScore({ health: result, discovery: null, history: api.history });
+  api.healthScore = sc.score;
+  api.capabilities = buildCapabilityMatrix({ health: result });
+  api._diag = buildDiagnostics({ api, health: result, discovery: null, score: sc, capabilities: api.capabilities });
+
+  save(); render();
+}
+
+window.checkOne = id => {
+  const api = apis.find(a => a.id === id);
+  if (api) performCheck(api);
+};
+
+window.discoverOne = async id => {
+  const api = apis.find(a => a.id === id);
+  if (!api) return;
+  toast('در حال کشف مدل‌ها...');
+  const res = await discoverModels(api);
+  if (res.success) {
+    api.discoveredModels = res.models;
+    api.models = res.models;
+    api.capabilities = buildCapabilityMatrix({ discovery: res, health: api.health });
+    const sc = computeHealthScore({ health: api.health, discovery: res, history: api.history });
+    if (api.health) api.healthScore = sc.score;
+    api._diag = buildDiagnostics({ api, health: api.health, discovery: res, score: sc, capabilities: api.capabilities });
+    save(); render();
+    toast(`✓ ${res.models.length} مدل کشف شد.`);
+  } else {
+    if (res.errorCode === 'CORS_BLOCKED') toast('⚠ مرورگر توسط CORS مسدود شد. از curl fallback استفاده کنید.');
+    else toast(`✗ کشف مدل ناموفق: ${res.errorMessage}`);
+  }
+};
+
+$('#checkAllBtn').onclick = async () => {
+  if (!apis.length) { toast('لیست خالی است.'); return; }
+  toast('شروع سنجش سلامت همه APIها...');
+  for (const api of apis) {
+    await performCheck(api);
+  }
+  toast('سنجش همه به پایان رسید.');
+};
+
+function updateAutoBtn() {
+  const b = $('#autoBtn');
+  if (autoEnabled) {
+    b.classList.add('btn-active');
+    b.textContent = '⏱ روشن';
+  } else {
+    b.classList.remove('btn-active');
+    b.textContent = '⏱ خودکار';
+  }
+}
+
+function startAuto() {
+  stopAuto();
+  const m = Number($('#autoInterval').value) || 15;
+  autoTimer = setInterval(async () => {
+    if (!apis.length) return;
+    for (const api of apis) await performCheck(api);
+  }, m * 60 * 1000);
+}
+
+function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
+
+$('#autoBtn').onclick = () => {
+  autoEnabled = !autoEnabled;
+  if (autoEnabled) { startAuto(); toast('بررسی خودکار فعال شد.'); }
+  else { stopAuto(); toast('بررسی خودکار متوقف شد.'); }
+  updateAutoBtn(); save();
+};
+
+$('#autoInterval').onchange = () => { if (autoEnabled) startAuto(); save(); };
+$('#searchInput').oninput = render;
+$('#filterProvider').onchange = render;
+$('#filterStatus').onchange = render;
+
+$('#exportBtn').onclick = () => {
+  const includeSecrets = confirm('آیا خروجی شامل کلیدهای API باشد؟\n\nOK = شامل secret (هشدار امنیتی)\nCancel = فقط پیکربندی بدون secret (پیشنهاد می‌شود)');
+  const payload = toExportPayload(apis, { includeSecrets });
+  if (!includeSecrets) toast('خروجی بدون secret ذخیره شد.');
+  else alert('⚠ هشدار: فایل خروجی شامل کلیدهای API است. آن را امن نگه دارید و commit نکنید.');
+  const b = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = 'api-tokens-' + (includeSecrets ? 'full-' : 'config-') + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('خروجی JSON دانلود شد.');
+};
+
+$('#importBtn').onclick = () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (!file) return;
+    try {
+      const data = JSON.parse(await file.text());
+      if (!Array.isArray(data)) throw 0;
+      if (!confirm(`${data.length} مورد وارد شود؟`)) return;
+      apis = data.map(normalizeApiEntry);
+      save(); render();
+      toast('اطلاعات با موفقیت وارد شد.');
+    } catch { toast('خطا در خواندن فایل JSON.'); }
+  };
+  input.click();
+};
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+
+initTheme();
+load();
+updateAutoBtn();
+if (autoEnabled) startAuto();
+render();
+</script>
 </body>
 </html>
