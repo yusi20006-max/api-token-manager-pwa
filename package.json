@@ -4,6 +4,6 @@
   "description": "API Health & Capability Checker PWA",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/**/*.test.js"
+    "test": "node --test tests/*.test.js"
   }
 }
