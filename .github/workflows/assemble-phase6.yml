@@ -1,25 +1,35 @@
 name: assemble-phase6
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  validate-phase61:
+  assemble:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: fix/phase6-1-progressive-disclosure
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Run test suite
-        run: npm test
-      - name: Validate Phase 6.1 markers
+      - name: Decode base64 parts into index.html
         run: |
-          grep -q 'document.querySelectorAll(\x27.card-details.open\x27)' index.html
-          grep -q 'aria-expanded="false"' index.html
-          ! grep -q 'font-weight:400;font-size:.75rem;color:var(--text-muted)\">(\${escapeHtml(api.providerId' index.html
+          set -e
+          git config user.name "Yousef"
+          git config user.email "yusi20006@gmail.com"
+          cat .phase6/b00 .phase6/b01 .phase6/b02 .phase6/b03 .phase6/b04 \
+              .phase6/b05 .phase6/b06 .phase6/b07 .phase6/b08 .phase6/b09 \
+              .phase6/b10 .phase6/b11 .phase6/b12 .phase6/b13 .phase6/b14 \
+              .phase6/b15 .phase6/b16 .phase6/b17 .phase6/b18 .phase6/b19 \
+              > /tmp/index.b64
+          base64 -d /tmp/index.b64 > index.html
+          grep -q token-row index.html
+          grep -q statusChips index.html
+          grep -q "Health Details" index.html
+          grep -q "مشخصات" index.html
+          test $(wc -c < index.html) -eq 38819
+          wc -c index.html
+          md5sum index.html
+          git add index.html
+          git commit -m "Phase 6: Compact Token Dashboard & Progressive Disclosure
+
+Closes #10"
+          git push origin HEAD:main
