@@ -10,9 +10,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Assemble patch and apply
         run: |
+          set -e
           git config user.name "Yousef"
           git config user.email "yusi20006@gmail.com"
-          cat .phase6/patch.b64.0 .phase6/patch.b64.1 .phase6/patch.b64.2 .phase6/patch.b64.3 > /tmp/p6.b64
+          cat .phase6/b64.0 .phase6/b64.1 .phase6/b64.2 .phase6/b64.3 .phase6/b64.4 .phase6/b64.5 > /tmp/p6.b64
           base64 -d /tmp/p6.b64 > /tmp/p6.patch
           patch -p1 < /tmp/p6.patch
           grep -q token-row index.html
