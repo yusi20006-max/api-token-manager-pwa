@@ -29,7 +29,9 @@ function realisticApi() {
       latencyMs: 20 + i,
       httpStatus: 200,
       errorCode: null,
-      errorMessage: 'ok'
+      errorMessage: 'ok',
+      providerId: 'custom',
+      model: 'models/gemini-2.5-flash-preview-tts'
     })),
     createdAt: 1788840000000
   };
