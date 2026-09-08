@@ -260,9 +260,24 @@ function statusLabelFa(key) {
 function toggleDetails(id) {
   const el = document.getElementById('details-' + id);
   if (!el) return;
-  el.classList.toggle('open');
-  const btn = document.querySelector('[data-details-btn="' + id + '"]');
-  if (btn) btn.textContent = el.classList.contains('open') ? 'بستن' : 'مشخصات';
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.card-details.open').forEach(other => {
+    other.classList.remove('open');
+    const otherId = other.id.replace(/^details-/, '');
+    const otherBtn = document.querySelector('[data-details-btn="' + otherId + '"]');
+    if (otherBtn) {
+      otherBtn.textContent = 'مشخصات';
+      otherBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+  if (!wasOpen) {
+    el.classList.add('open');
+    const btn = document.querySelector('[data-details-btn="' + id + '"]');
+    if (btn) {
+      btn.textContent = 'بستن';
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  }
 }
 
 function render() {
@@ -345,7 +360,7 @@ function render() {
         <div class="token-row">
           <span class="token-status" title="${escapeAttr(bt)}">${emoji}</span>
           <div class="token-main">
-            <div class="token-name">${escapeHtml(api.name)} <span style="font-weight:400;font-size:.75rem;color:var(--text-muted)">(${escapeHtml(api.providerId || 'custom')})</span></div>
+            <div class="token-name">${escapeHtml(api.name)}</div>
             <div class="token-sub">
               ${api.model ? `<span>مدل: ${escapeHtml(api.model)}</span>` : ''}
               <span class="badge badge-${uKey === 'curl' ? 'curl' : st}">${bt}</span>
@@ -354,7 +369,7 @@ function render() {
             </div>
           </div>
           <div class="token-actions">
-            <button class="btn-ghost btn-sm" data-details-btn="${api.id}" onclick="toggleDetails('${api.id}')">مشخصات</button>
+            <button class="btn-ghost btn-sm" data-details-btn="${api.id}" aria-expanded="false" aria-controls="details-${api.id}" onclick="toggleDetails('${api.id}')">مشخصات</button>
             <button class="btn-primary btn-sm" onclick="${testBtnOnclick}">${testBtnLabel}</button>
           </div>
         </div>
