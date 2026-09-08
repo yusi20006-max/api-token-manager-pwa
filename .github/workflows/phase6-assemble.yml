@@ -1,5 +1,8 @@
 name: phase6-assemble
 on:
+  push:
+    paths:
+      - '.phase6/trigger'
   workflow_dispatch:
 jobs:
   assemble:
@@ -29,5 +32,5 @@ jobs:
           git add index.html
           git commit -m "Phase 6: Compact Token Dashboard & Progressive Disclosure
 
-Closes #10"
+Closes #10" || echo "nothing to commit"
           git push origin HEAD:main
