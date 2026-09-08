@@ -1,0 +1,43 @@
+ch}
+  .field-label{min-width:auto}
+  .token-row{padding:8px 10px;gap:8px;min-height:48px}
+  .token-name{font-size:.9rem}
+  .token-sub{font-size:.68rem;gap:4px}
+  .token-actions{flex-direction:column;gap:4px}
+  .token-actions .btn-sm{padding:4px 8px;font-size:.75rem}
+  .status-chips{gap:4px}
+  .status-chip{padding:3px 8px;font-size:.72rem}
+  .cards{gap:6px}
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <h1>🔑 مدیر توکن‌های API و سنجش سلامت</h1>
+  <div class="clock" id="clock">--:--:--</div>
+  <div class="header-actions">
+    <button class="btn-ghost btn-sm" id="themeBtn" title="تغییر تم">🌅</button>
+    <button class="btn-ghost btn-sm" id="exportBtn" title="خروجی JSON">⬇️</button>
+    <button class="btn-ghost btn-sm" id="importBtn" title="ورودی JSON">⬆️</button>
+  </div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <input type="search" class="search-box" id="searchInput" placeholder="جستجو در APIها..."/>
+    <button class="btn-primary" id="addBtn">＋ افزودن API</button>
+    <button class="btn-ghost" id="checkAllBtn">✓ چک همه</button>
+    <div class="auto-box">
+      <button class="btn-ghost btn-sm" id="autoBtn">⏱ خودکار</button>
+      <select id="autoInterval">
+        <option value="5">۵ دقیقه</option>
+        <option value="15" selected>۱۵ دقیقه</option>
+        <option value="30">۳۰ دقیقه</option>
+        <option value="60">۶۰ دقیقه</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="dashboard" id="dashboard"><strong>📊 API Health Dashboard</strong><div class="dash-grid" id="dashGrid"></div></div>
+  <div class="filters">
+    <select id="filterProvider"><option value="">همه ارائه‌دهنده‌ها</option><option value="custom">Custom</option><option value="zenmux">ZenMux</option><option value="openai">OpenAI</option><option value="anthropic">Anthropic</option><option value="openrouter">OpenRouter</option><option value="deepseek">DeepSee
