@@ -8,13 +8,22 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Assemble index.html from parts
+      - name: Assemble index.html from 20 parts
         run: |
+          set -e
           git config user.name "Yousef"
           git config user.email "yusi20006@gmail.com"
-          cat .phase6/index.part0 .phase6/index.part1 .phase6/index.part2 > index.html
+          cat .phase6/ix00 .phase6/ix01 .phase6/ix02 .phase6/ix03 .phase6/ix04 \
+              .phase6/ix05 .phase6/ix06 .phase6/ix07 .phase6/ix08 .phase6/ix09 \
+              .phase6/ix10 .phase6/ix11 .phase6/ix12 .phase6/ix13 .phase6/ix14 \
+              .phase6/ix15 .phase6/ix16 .phase6/ix17 .phase6/ix18 .phase6/ix19 \
+              > index.html
           grep -q token-row index.html
           grep -q statusChips index.html
+          grep -q "Health Details" index.html
+          grep -q "مشخصات" index.html
+          test $(wc -c < index.html) -gt 35000
+          wc -c index.html
           git add index.html
           git commit -m "Phase 6: Compact Token Dashboard & Progressive Disclosure
 
