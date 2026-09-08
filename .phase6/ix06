@@ -1,0 +1,40 @@
+k</option><option value="google">Google</option><option value="groq">Groq</option></select>
+  </div>
+  <div class="status-chips" id="statusChips">
+    <span class="status-chip active" data-status="">All</span>
+    <span class="status-chip" data-status="healthy">🟢 Healthy</span>
+    <span class="status-chip" data-status="failed">🔴 Failed</span>
+    <span class="status-chip" data-status="curl">🟡 CURL</span>
+    <span class="status-chip" data-status="unknown">⚪ Untested</span>
+  </div>
+  <div class="cards" id="cards"></div>
+  <div class="empty" id="emptyState" style="display:none">
+    <div style="font-size:2.8rem">🗝️</div>
+    <p>هنوز هیچ API ثبت نشده است.</p>
+  </div>
+  <p class="footer-note">داده‌ها محلی هستند. برای دورزدن محدودیت CORS می‌توانید از دستور curl استفاده کنید.</p>
+</main>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2 id="modalTitle">افزودن API</h2>
+    <div class="smart-box">
+      <div style="font-size:0.85rem">
+        <strong>⚡ تشخیص هوشمند (Smart Setup)</strong>
+        <div style="font-size:0.75rem;color:var::var(--text-muted);margin-top:2px">آدرس و کلید را وارد کنید و تشخیص خودکار را بزنید.</div>
+      </div>
+      <button type="button" class="btn-primary btn-sm" id="smartDetectBtn">🔍 تشخیص خودکار</button>
+    </div>
+    <form id="apiForm">
+      <input type="hidden" id="editId"/>
+      <div class="form-group">
+        <label for="providerId">انتخاب ارائه‌دهنده</label>
+        <select id="providerId">
+          <option value="custom">سفارشی (Custom)</option>
+          <option value="zenmux">ZenMux</option>
+          <option value="openai">OpenAI</option>
+          <option value="anthropic">Anthropic (Claude)</option>
+          <option value="openrouter">OpenRouter</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="google">Google Gemini</option>
+          <option 
