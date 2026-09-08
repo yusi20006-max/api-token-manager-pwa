@@ -1,0 +1,37 @@
+up.js';
+import { normalizeApiEntry, sanitizeHistoryEntry, toExportPayload, STORAGE_KEY, MAX_HISTORY, uid } from './js/storage.js';
+import { computeHealthScore } from './js/score.js';
+import { buildCapabilityMatrix } from './js/capabilities.js';
+import { buildDiagnostics } from './js/diagnostics.js';
+
+let apis = [], editId = null, autoTimer = null, autoEnabled = false;
+
+const $ = s => document.querySelector(s);
+function toast(m, ms = 2200) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), ms); }
+function formatTime(ts) { if (!ts) return '—'; return new Date(ts).toLocaleString('fa-IR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+function formatShortTime(ts) { if (!ts) return '—'; return new Date(ts).toLocaleString('fa-IR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+function maskKey(k) { if (!k || k.length < 8) return '••••••••'; return k.slice(0, 4) + '••••' + k.slice(-4); }
+
+function updateClock() { $('#clock').textContent = new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+setInterval(updateClock, 1000); updateClock();
+
+function load() {
+  try {
+    const r = localStorage.getItem(STORAGE_KEY);
+    apis = r ? JSON.parse(r) : [];
+    apis = apis.map(normalizeApiEntry);
+  } catch { apis = []; }
+
+  const s = localStorage.getItem('atm-auto');
+  if (s) {
+    try {
+      const o = JSON.parse(s);
+      autoEnabled = !!o.enabled;
+      if (o.interval) $('#autoInterval').value = String(o.interval);
+    } catch {}
+  }
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(apis));
+  localStorage.setItem('atm-auto', JSON.stringify({ enabled: autoEnabled, interval: Number($('#autoInterval').value) || 15 }
