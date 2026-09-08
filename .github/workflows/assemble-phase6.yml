@@ -1,35 +1,45 @@
 name: assemble-phase6
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
-  assemble:
+  apply-phase61:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Decode base64 parts into index.html
+        with:
+          fetch-depth: 0
+      - name: Patch Phase 6.1 branch
         run: |
           set -e
-          git config user.name "Yousef"
-          git config user.email "yusi20006@gmail.com"
-          cat .phase6/b00 .phase6/b01 .phase6/b02 .phase6/b03 .phase6/b04 \
-              .phase6/b05 .phase6/b06 .phase6/b07 .phase6/b08 .phase6/b09 \
-              .phase6/b10 .phase6/b11 .phase6/b12 .phase6/b13 .phase6/b14 \
-              .phase6/b15 .phase6/b16 .phase6/b17 .phase6/b18 .phase6/b19 \
-              > /tmp/index.b64
-          base64 -d /tmp/index.b64 > index.html
-          grep -q token-row index.html
-          grep -q statusChips index.html
-          grep -q "Health Details" index.html
-          grep -q "مشخصات" index.html
-          test $(wc -c < index.html) -eq 38819
-          wc -c index.html
-          md5sum index.html
+          git fetch origin fix/phase6-1-progressive-disclosure
+          git checkout -B fix/phase6-1-progressive-disclosure origin/fix/phase6-1-progressive-disclosure
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '''function toggleDetails(id) {\n  const el = document.getElementById('details-' + id);\n  if (!el) return;\n  el.classList.toggle('open');\n  const btn = document.querySelector('[data-details-btn="' + id + '"]');\n  if (btn) btn.textContent = el.classList.contains('open') ? 'بستن' : 'مشخصات';\n}'''
+          new = '''function toggleDetails(id) {\n  const el = document.getElementById('details-' + id);\n  if (!el) return;\n  const wasOpen = el.classList.contains('open');\n  document.querySelectorAll('.card-details.open').forEach(other => {\n    other.classList.remove('open');\n    const otherId = other.id.replace(/^details-/, '');\n    const otherBtn = document.querySelector('[data-details-btn="' + otherId + '"]');\n    if (otherBtn) {\n      otherBtn.textContent = 'مشخصات';\n      otherBtn.setAttribute('aria-expanded', 'false');\n    }\n  });\n  if (!wasOpen) {\n    el.classList.add('open');\n    const btn = document.querySelector('[data-details-btn="' + id + '"]');\n    if (btn) {\n      btn.textContent = 'بستن';\n      btn.setAttribute('aria-expanded', 'true');\n    }\n  }\n}'''
+          if old not in s:
+            raise SystemExit('toggleDetails source not found')
+          s = s.replace(old, new, 1)
+          old_btn = '''<button class="btn-ghost btn-sm" data-details-btn="${api.id}" onclick="toggleDetails('${api.id}')">مشخصات</button>'''
+          new_btn = '''<button class="btn-ghost btn-sm" data-details-btn="${api.id}" aria-expanded="false" aria-controls="details-${api.id}" onclick="toggleDetails('${api.id}')">مشخصات</button>'''
+          if old_btn not in s:
+            raise SystemExit('details button source not found')
+          s = s.replace(old_btn, new_btn, 1)
+          old_provider = ''' <span style="font-weight:400;font-size:.75rem;color:var(--text-muted)">(${escapeHtml(api.providerId || 'custom')})</span>'''
+          if old_provider in s:
+            s = s.replace(old_provider, '', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+          npm test
+          git config user.name 'Yasin Autonomous Agent'
+          git config user.email 'yasin-autonomous-agent@users.noreply.github.com'
           git add index.html
-          git commit -m "Phase 6: Compact Token Dashboard & Progressive Disclosure
-
-Closes #10"
-          git push origin HEAD:main
+          git commit -m 'fix(phase6.1): enforce exclusive progressive disclosure'
+          git push origin HEAD:fix/phase6-1-progressive-disclosure
