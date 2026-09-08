@@ -63,6 +63,20 @@ test('wrapped backups restore without dropping records', () => {
   assert.strictEqual(restoreApisFromPayload({ apis: records }).length, 2);
 });
 
+test('restore validation is filename-independent', () => {
+  const backup = JSON.stringify(toExportPayload([realisticApi()], { includeSecrets: true }));
+  const arbitraryFilenames = ['backup.json', 'test.json', 'anything.json', 'my-api-data.json', '123.json'];
+
+  for (const filename of arbitraryFilenames) {
+    // The restore parser receives file contents, not the filename. This explicitly
+    // documents the contract that renaming a valid JSON backup cannot affect restore.
+    const parsed = JSON.parse(backup);
+    const restored = restoreApisFromPayload(parsed);
+    assert.strictEqual(restored.length, 1, `restore failed for ${filename}`);
+    assert.strictEqual(restored[0].id, 'gemini-full');
+  }
+});
+
 test('invalid or empty payload is rejected before state replacement', () => {
   for (const payload of [null, {}, { apis: [] }, [], { apis: [null] }, { apis: 'not-an-array' }]) {
     assert.throws(() => restoreApisFromPayload(payload), /NO_SUPPORTED_API_RECORDS/);
