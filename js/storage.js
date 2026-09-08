@@ -67,29 +67,82 @@ export function toExportPayload(apis, { includeSecrets = false } = {}) {
   });
 }
 
-/** Extract API records from supported backup shapes without mutating state. */
+const IMPORT_RECORD_KEYS = ['apis', 'tokens', 'items', 'records', 'apiTokens'];
+const IMPORT_WRAPPER_KEYS = ['data', 'payload', 'backup', 'export', 'result'];
+
+function looksLikeApiRecord(item) {
+  if (!item || typeof item !== 'object' || Array.isArray(item)) return false;
+  return [
+    'id', 'providerId', 'name', 'baseUrl', 'apiKey', 'authType',
+    'model', 'models', 'discoveredModels', 'testEndpoint', 'status'
+  ].some(key => Object.prototype.hasOwnProperty.call(item, key));
+}
+
+/** Extract API records from supported backup/export shapes without mutating state. */
 export function extractImportRecords(data) {
-  if (Array.isArray(data)) return data;
-  if (!data || typeof data !== 'object') return null;
+  const seen = new Set();
 
-  const directKeys = ['apis', 'tokens', 'items'];
-  for (const key of directKeys) {
-    if (Array.isArray(data[key])) return data[key];
-  }
+  function visit(value, depth = 0) {
+    if (depth > 5 || value == null) return null;
 
-  if (data.data && typeof data.data === 'object') {
-    if (Array.isArray(data.data)) return data.data;
-    for (const key of directKeys) {
-      if (Array.isArray(data.data[key])) return data.data[key];
+    if (typeof value === 'string') {
+      const text = value.trim();
+      if (!text || seen.has(text)) return null;
+      seen.add(text);
+      try {
+        return visit(JSON.parse(text), depth + 1);
+      } catch {
+        return null;
+      }
     }
+
+    if (Array.isArray(value)) {
+      if (value.length && value.every(looksLikeApiRecord)) return value;
+      for (const item of value) {
+        const nested = visit(item, depth + 1);
+        if (nested) return nested;
+      }
+      return null;
+    }
+
+    if (typeof value !== 'object') return null;
+
+    for (const key of IMPORT_RECORD_KEYS) {
+      if (Array.isArray(value[key])) {
+        const records = value[key];
+        if (records.length && records.every(looksLikeApiRecord)) return records;
+        const nested = visit(records, depth + 1);
+        if (nested) return nested;
+      }
+    }
+
+    for (const key of IMPORT_WRAPPER_KEYS) {
+      if (Object.prototype.hasOwnProperty.call(value, key)) {
+        const nested = visit(value[key], depth + 1);
+        if (nested) return nested;
+      }
+    }
+
+    return null;
   }
 
-  return null;
+  return visit(data);
+}
+
+export function parseRestoreFileText(text) {
+  if (typeof text !== 'string' || !text.trim()) throw new Error('INVALID_JSON');
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error('INVALID_JSON');
+  }
+  return restoreApisFromPayload(data);
 }
 
 export function restoreApisFromPayload(data) {
   const records = extractImportRecords(data);
-  if (!records || !records.length || records.some(item => !item || typeof item !== 'object' || Array.isArray(item))) {
+  if (!records || !records.length || records.some(item => !looksLikeApiRecord(item))) {
     throw new Error('NO_SUPPORTED_API_RECORDS');
   }
   return records.map(normalizeApiEntry);
@@ -142,15 +195,16 @@ if (typeof window !== 'undefined') {
           const file = input.files && input.files[0];
           if (!file) return;
           try {
-            const data = JSON.parse(await file.text());
-            const restored = restoreApisFromPayload(data);
+            const restored = parseRestoreFileText(await file.text());
             if (!confirm(`${restored.length} مورد وارد شود؟`)) return;
             localStorage.setItem(STORAGE_KEY, JSON.stringify(restored));
             window.location.reload();
           } catch (err) {
-            const message = err && err.message === 'NO_SUPPORTED_API_RECORDS'
-              ? 'هیچ رکورد API قابل پشتیبانی در فایل پیدا نشد.'
-              : 'خطا در خواندن یا اعتبارسنجی فایل JSON.';
+            const message = err && err.message === 'INVALID_JSON'
+              ? 'فایل JSON معتبر نیست.'
+              : err && err.message === 'NO_SUPPORTED_API_RECORDS'
+                ? 'ساختار فایل معتبر است اما رکورد API قابل پشتیبانی پیدا نشد.'
+                : 'خطا در خواندن یا اعتبارسنجی فایل JSON.';
             alert(message);
           }
         };
