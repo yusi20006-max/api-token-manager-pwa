@@ -50,7 +50,6 @@ export function sanitizeHistoryEntry(h) {
     providerId: h.providerId || undefined,
     model: h.model || undefined
   };
-  // Never persist secrets
   delete clean.apiKey; delete clean.token; delete clean.Authorization;
   delete clean.authorization; delete clean.headers;
   return clean;
@@ -96,6 +95,12 @@ export function restoreApisFromPayload(data) {
   return records.map(normalizeApiEntry);
 }
 
+/** Remove all API data so the next page load starts as a clean test environment. */
+export function clearAllApiData() {
+  if (typeof localStorage === 'undefined') return;
+  localStorage.removeItem(STORAGE_KEY);
+}
+
 /** Global bridge for the inline `onclick` used by the token-row details button. */
 export function toggleDetails(id) {
   if (typeof document === 'undefined') return;
@@ -126,37 +131,50 @@ export function toggleDetails(id) {
 if (typeof window !== 'undefined') {
   window.toggleDetails = toggleDetails;
 
-  // Replace the legacy importer after the document has been parsed. The restored
-  // normalized list is committed to the same storage key used by index.html, then
-  // the page reloads so its module-scoped `apis` state is rebuilt from storage.
   window.addEventListener('DOMContentLoaded', () => {
     const importBtn = document.getElementById('importBtn');
-    if (!importBtn) return;
-
-    importBtn.onclick = () => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.json,application/json';
-      input.onchange = async () => {
-        const file = input.files && input.files[0];
-        if (!file) return;
-        try {
-          const data = JSON.parse(await file.text());
-          const restored = restoreApisFromPayload(data);
-          if (!confirm(`${restored.length} مورد وارد شود؟`)) return;
-
-          // Atomic from the app's perspective: parse, validate and normalize first;
-          // only then replace the persisted API list.
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(restored));
-          window.location.reload();
-        } catch (err) {
-          const message = err && err.message === 'NO_SUPPORTED_API_RECORDS'
-            ? 'هیچ رکورد API قابل پشتیبانی در فایل پیدا نشد.'
-            : 'خطا در خواندن یا اعتبارسنجی فایل JSON.';
-          alert(message);
-        }
+    if (importBtn) {
+      importBtn.onclick = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json,application/json';
+        input.onchange = async () => {
+          const file = input.files && input.files[0];
+          if (!file) return;
+          try {
+            const data = JSON.parse(await file.text());
+            const restored = restoreApisFromPayload(data);
+            if (!confirm(`${restored.length} مورد وارد شود؟`)) return;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(restored));
+            window.location.reload();
+          } catch (err) {
+            const message = err && err.message === 'NO_SUPPORTED_API_RECORDS'
+              ? 'هیچ رکورد API قابل پشتیبانی در فایل پیدا نشد.'
+              : 'خطا در خواندن یا اعتبارسنجی فایل JSON.';
+            alert(message);
+          }
+        };
+        input.click();
       };
-      input.click();
+    }
+
+    // Add a single reset control without changing the existing compact toolbar markup.
+    const toolbar = document.querySelector('.toolbar');
+    const checkAllBtn = document.getElementById('checkAllBtn');
+    if (!toolbar || !checkAllBtn || document.getElementById('resetAllBtn')) return;
+
+    const resetBtn = document.createElement('button');
+    resetBtn.id = 'resetAllBtn';
+    resetBtn.className = 'btn-ghost';
+    resetBtn.type = 'button';
+    resetBtn.textContent = '🧹 ریست / پاک کردن همه';
+    resetBtn.title = 'حذف همه APIهای ذخیره‌شده و شروع تست تمیز';
+    resetBtn.onclick = () => {
+      if (!confirm('همه APIها و داده‌های تست محلی پاک شوند؟ این کار قابل بازگشت نیست.')) return;
+      clearAllApiData();
+      sessionStorage.removeItem('api-token-manager-auto');
+      window.location.reload();
     };
+    checkAllBtn.insertAdjacentElement('afterend', resetBtn);
   });
 }
