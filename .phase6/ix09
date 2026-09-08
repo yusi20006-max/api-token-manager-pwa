@@ -1,0 +1,39 @@
+));
+}
+
+function initTheme() {
+  if ((localStorage.getItem('atm-theme') || 'dark') === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+}
+
+$('#themeBtn').onclick = () => {
+  const l = document.documentElement.getAttribute('data-theme') === 'light';
+  if (l) {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('atm-theme', 'dark');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light');
+    localStorage.setItem('atm-theme', 'light');
+  }
+};
+
+function authLabel(t) {
+  return { bearer: 'Bearer', 'x-api-key': 'x-api-key', query: 'Query', none: 'بدون' }[t] || t;
+}
+
+function escapeHtml(s) { if (!s) return ''; return String(s).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"'); }
+function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
+
+function renderDashboard(list) {
+  const g = $('#dashGrid');
+  if (!g) return;
+  const total = apis.length;
+  const healthy = apis.filter(a => a.status === 'healthy').length;
+  const warning = apis.filter(a => a.status === 'partial' || a.status === 'checking').length;
+  const failed = apis.filter(a => a.status === 'failed' || a.status === 'error').length;
+  const lats = apis.map(a => a.lastLatency).filter(v => typeof v === 'number');
+  const avg = lats.length ? Math.round(lats.reduce((s, v) => s + v, 0) / lats.length) + ' ms' : '—';
+  const last = apis.map(a => a.lastChecked).filter(Boolean);
+  const lastStr = last.length ? formatShortTime(Math.max(...last)) : '—';
+  g.innerHTML = `<div class="dash-item">Total: <strong>${total}</strong></div><div class="dash-item">Healthy: <strong>${healthy}</strong></div><div class="dash-item">Warning: <strong>${warning}</strong></div><div class="dash-item">Failed: <strong>${failed}</strong></div><div class="dash-item">Avg latency: <strong>${
