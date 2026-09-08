@@ -1,0 +1,26 @@
+name: phase6-patch-apply
+on:
+  workflow_dispatch:
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble patch and apply
+        run: |
+          git config user.name "Yousef"
+          git config user.email "yusi20006@gmail.com"
+          cat .phase6/patch.b64.0 .phase6/patch.b64.1 .phase6/patch.b64.2 .phase6/patch.b64.3 > /tmp/p6.b64
+          base64 -d /tmp/p6.b64 > /tmp/p6.patch
+          patch -p1 < /tmp/p6.patch
+          grep -q token-row index.html
+          grep -q statusChips index.html
+          grep -q "Health Details" index.html
+          wc -c index.html
+          git add index.html
+          git commit -m "Phase 6: Compact Token Dashboard & Progressive Disclosure
+
+Closes #10"
+          git push origin HEAD:main
