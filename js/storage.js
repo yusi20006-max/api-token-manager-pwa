@@ -68,11 +68,7 @@ export function toExportPayload(apis, { includeSecrets = false } = {}) {
   });
 }
 
-/**
- * Extract API records from supported backup shapes without mutating state.
- * Supported: [...], {apis:[...]}, {data:[...]}, {tokens:[...]}, {items:[...]},
- * and one nested data wrapper such as {data:{apis:[...]}}.
- */
+/** Extract API records from supported backup shapes without mutating state. */
 export function extractImportRecords(data) {
   if (Array.isArray(data)) return data;
   if (!data || typeof data !== 'object') return null;
@@ -100,11 +96,7 @@ export function restoreApisFromPayload(data) {
   return records.map(normalizeApiEntry);
 }
 
-/**
- * Global bridge for the inline `onclick` used by the token-row details button.
- * index.html is an ES module, so its local toggleDetails function is not on window.
- * Expose a single safe browser handler while keeping Node tests/browser imports valid.
- */
+/** Global bridge for the inline `onclick` used by the token-row details button. */
 export function toggleDetails(id) {
   if (typeof document === 'undefined') return;
   const el = document.getElementById('details-' + id);
@@ -134,8 +126,9 @@ export function toggleDetails(id) {
 if (typeof window !== 'undefined') {
   window.toggleDetails = toggleDetails;
 
-  // Replace the legacy importer after the document has been parsed. This keeps
-  // index.html backward-compatible while guaranteeing validation before state replacement.
+  // Replace the legacy importer after the document has been parsed. The restored
+  // normalized list is committed to the same storage key used by index.html, then
+  // the page reloads so its module-scoped `apis` state is rebuilt from storage.
   window.addEventListener('DOMContentLoaded', () => {
     const importBtn = document.getElementById('importBtn');
     if (!importBtn) return;
@@ -149,25 +142,18 @@ if (typeof window !== 'undefined') {
         if (!file) return;
         try {
           const data = JSON.parse(await file.text());
-          const records = extractImportRecords(data);
-          if (!records || !records.length) {
-            throw new Error('NO_SUPPORTED_API_RECORDS');
-          }
-          if (records.some(item => !item || typeof item !== 'object' || Array.isArray(item))) {
-            throw new Error('INVALID_API_RECORD');
-          }
           const restored = restoreApisFromPayload(data);
           if (!confirm(`${restored.length} مورد وارد شود؟`)) return;
 
-          // Only replace state after the complete payload has parsed and normalized.
-          // The app's module scope exposes `apis`/`save`/`render` only internally, so
-          // dispatch a typed event consumed by the page rather than touching storage here.
-          window.dispatchEvent(new CustomEvent('api-token-manager:restore', { detail: restored }));
+          // Atomic from the app's perspective: parse, validate and normalize first;
+          // only then replace the persisted API list.
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(restored));
+          window.location.reload();
         } catch (err) {
           const message = err && err.message === 'NO_SUPPORTED_API_RECORDS'
             ? 'هیچ رکورد API قابل پشتیبانی در فایل پیدا نشد.'
             : 'خطا در خواندن یا اعتبارسنجی فایل JSON.';
-          window.dispatchEvent(new CustomEvent('api-token-manager:restore-error', { detail: message }));
+          alert(message);
         }
       };
       input.click();
