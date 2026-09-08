@@ -67,3 +67,38 @@ export function toExportPayload(apis, { includeSecrets = false } = {}) {
     return base;
   });
 }
+
+/**
+ * Global bridge for the inline `onclick` used by the token-row details button.
+ * index.html is an ES module, so its local toggleDetails function is not on window.
+ * Expose a single safe browser handler while keeping Node tests/browser imports valid.
+ */
+export function toggleDetails(id) {
+  if (typeof document === 'undefined') return;
+  const el = document.getElementById('details-' + id);
+  if (!el) return;
+  const wasOpen = el.classList.contains('open');
+
+  document.querySelectorAll('.card-details.open').forEach(other => {
+    other.classList.remove('open');
+    const otherId = other.id.replace(/^details-/, '');
+    const otherBtn = document.querySelector('[data-details-btn="' + otherId + '"]');
+    if (otherBtn) {
+      otherBtn.textContent = 'مشخصات';
+      otherBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  if (!wasOpen) {
+    el.classList.add('open');
+    const btn = document.querySelector('[data-details-btn="' + id + '"]');
+    if (btn) {
+      btn.textContent = 'بستن';
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.toggleDetails = toggleDetails;
+}
