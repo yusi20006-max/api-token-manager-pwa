@@ -97,14 +97,14 @@ export function detectAuthType(providerId, url) {
   if (providerId === 'anthropic') return 'x-api-key';
   if (providerId === 'openrouter') return 'bearer';
   if (providerId === 'deepseek') return 'bearer';
-  if (providerId === 'google') return 'query';
+  if (providerId === 'google') return 'x-goog-api-key';
   if (providerId === 'groq') return 'bearer';
   if (providerId === 'orcarouter') return 'bearer';
 
   const profile = getProviderProfile(providerId);
   if (profile && profile.authType) return profile.authType;
 
-  if (url && url.toLowerCase().includes('googleapis.com')) return 'query';
+  if (url && url.toLowerCase().includes('googleapis.com')) return 'x-goog-api-key';
   return 'bearer';
 }
 
