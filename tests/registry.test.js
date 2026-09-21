@@ -25,3 +25,20 @@ test('adapter builds request and curl correctly without exposing token in logs',
   assert.ok(curl.includes('curl -sS'));
   assert.ok(curl.includes('Authorization: Bearer TEST-PLACEHOLDER-KEY'));
 });
+
+
+test('OrcaRouter is a first-class OpenAI-compatible provider', () => {
+  const profile = getProviderProfile('orcarouter');
+  assert.strictEqual(profile.baseUrl, 'https://api.orcarouter.ai/v1');
+  assert.strictEqual(profile.authType, 'bearer');
+  assert.strictEqual(profile.testEndpoint, 'models');
+  assert.strictEqual(profile.model, 'orcarouter/auto');
+  assert.strictEqual(profile.endpoints.models, 'GET /models');
+  assert.strictEqual(profile.endpoints.chat, 'POST /chat/completions');
+  assert.strictEqual(profile.endpoints.responses, 'POST /responses');
+
+  const adapter = getAdapter('orcarouter');
+  const req = adapter.buildRequest({ baseUrl: profile.baseUrl, apiKey: 'TEST-ORCA-KEY', authType: 'bearer' });
+  assert.strictEqual(req.url, 'https://api.orcarouter.ai/v1/models');
+  assert.strictEqual(req.headers.Authorization, 'Bearer TEST-ORCA-KEY');
+});
