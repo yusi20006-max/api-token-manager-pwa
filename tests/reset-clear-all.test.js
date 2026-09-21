@@ -43,6 +43,6 @@ test('reset control remains wired to the canonical reset boundary', async () => 
   const source = await fs.readFile(new URL('../js/storage.js', import.meta.url), 'utf8');
   assert.match(source, /id = 'resetAllBtn'/);
   assert.match(source, /🧹 ریست \/ پاک کردن همه/);
-  assert.match(source, /clearAllApiData\(\)/);
+  assert.equal((source.match(/clearAllApiData\(\);/g) || []).length, 1);
   assert.match(source, /window\.location\.reload\(\)/);
 });
