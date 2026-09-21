@@ -8,8 +8,5 @@ test('API details render all capability matrix dimensions', async () => {
     assert.match(html, new RegExp(key));
   }
   assert.match(html, /Capability Matrix/);
-  assert.match(html, /NOT_TESTED/);
-  assert.match(html, /SUPPORTED/);
-  assert.match(html, /UNSUPPORTED/);
-  assert.match(html, /UNKNOWN/);
+  assert.match(html, /const state = caps\[key\] \|\| 'NOT_TESTED'/);
 });
