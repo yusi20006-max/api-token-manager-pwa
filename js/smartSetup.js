@@ -139,22 +139,29 @@ export async function discoverApiConfiguration(inputUrl, apiKey) {
   const discoveryResult = await discoverModels(tempApi);
   const healthResult = await checkApi(tempApi);
 
+  const reachable = healthResult.reachable;
+  const authenticated = healthResult.authenticated;
+  const verified = discoveryResult.success && reachable === true && authenticated === true;
+  const errorCode = discoveryResult.success ? healthResult.errorCode : discoveryResult.errorCode;
+  const errorMessage = discoveryResult.success ? healthResult.errorMessage : discoveryResult.errorMessage;
+
   return {
-    success: true,
+    success: verified,
+    detected: true,
     providerId,
     providerName,
     baseUrl: tempApi.baseUrl,
     authType,
     protocol: 'OpenAI-compatible / REST',
-    reachable: healthResult.reachable,
-    authenticated: healthResult.authenticated,
-    httpStatus: healthResult.httpStatus,
-    latencyMs: healthResult.latencyMs,
-    errorCode: healthResult.errorCode,
-    errorMessage: healthResult.errorMessage,
+    reachable,
+    authenticated,
+    httpStatus: healthResult.httpStatus ?? discoveryResult.httpStatus ?? null,
+    latencyMs: healthResult.latencyMs ?? null,
+    errorCode: errorCode || null,
+    errorMessage: errorMessage || null,
     capabilities: {
       models: discoveryResult.success ? 'available' : 'unavailable',
-      inference: healthResult.authenticated ? 'available' : 'unknown'
+      inference: 'unknown'
     },
     discoveredModels: discoveryResult.models || []
   };
