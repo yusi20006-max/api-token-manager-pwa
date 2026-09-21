@@ -1,4 +1,4 @@
-const CACHE = 'api-token-manager-v2';
+const CACHE = 'api-token-manager-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -17,6 +17,17 @@ const ASSETS = [
   './js/diagnostics.js'
 ];
 
+const ASSET_PATHS = new Set(
+  ASSETS.map((asset) => new URL(asset, self.location.href).pathname)
+);
+
+function isCacheableAsset(request) {
+  if (request.method !== 'GET') return false;
+
+  const url = new URL(request.url);
+  return url.origin === self.location.origin && ASSET_PATHS.has(url.pathname);
+}
+
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
@@ -32,10 +43,15 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  if (!isCacheableAsset(e.request)) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
+
   e.respondWith(
     caches.match(e.request).then((cached) => {
       return cached || fetch(e.request).then((res) => {
-        if (e.request.method === 'GET' && res.ok) {
+        if (res.ok) {
           const clone = res.clone();
           caches.open(CACHE).then((cache) => cache.put(e.request, clone));
         }
