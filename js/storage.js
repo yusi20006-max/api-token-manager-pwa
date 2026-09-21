@@ -155,7 +155,33 @@ export function clearAllApiData() {
 }
 
 
+/** Compatibility bridge for existing details-toggle tests and consumers. */
+export function toggleDetails(id) {
+  if (typeof document === 'undefined') return;
+  const el = document.getElementById('details-' + id);
+  if (!el) return;
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.card-details.open').forEach(other => {
+    other.classList.remove('open');
+    const otherId = other.id.replace(/^details-/, '');
+    const otherBtn = document.querySelector('[data-details-btn="' + otherId + '"]');
+    if (otherBtn) {
+      otherBtn.textContent = 'مشخصات';
+      otherBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+  if (!wasOpen) {
+    el.classList.add('open');
+    const btn = document.querySelector('[data-details-btn="' + id + '"]');
+    if (btn) {
+      btn.textContent = 'بستن';
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  }
+}
+
 if (typeof window !== 'undefined') {
+  window.toggleDetails = toggleDetails;
   window.addEventListener('DOMContentLoaded', () => {
     const toolbar = document.querySelector('.toolbar');
     const checkAllBtn = document.getElementById('checkAllBtn');
