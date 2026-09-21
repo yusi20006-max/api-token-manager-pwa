@@ -211,7 +211,6 @@ if (typeof window !== 'undefined') {
     resetBtn.onclick = () => {
       if (!confirm('همه APIها و داده‌های تست محلی پاک شوند؟ این کار قابل بازگشت نیست.')) return;
       clearAllApiData();
-      clearAllApiData();
       window.location.reload();
     };
     checkAllBtn.insertAdjacentElement('afterend', resetBtn);
