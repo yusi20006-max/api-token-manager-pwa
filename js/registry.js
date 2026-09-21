@@ -52,7 +52,7 @@ export const PROVIDERS = {
     id: 'google',
     name: 'Google Gemini',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
-    authType: 'query',
+    authType: 'x-goog-api-key',
     testEndpoint: 'models',
     model: 'gemini-2.5-flash',
     capabilities: { models: true, inference: true }
