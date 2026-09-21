@@ -485,7 +485,8 @@ $('#smartDetectBtn').onclick = async () => {
     }
     toast(`✓ شناسایی موفق: ${res.providerName} (${res.discoveredModels.length} مدل کشف شد)`);
   } else {
-    toast(`✗ تشخیص خودکار ناموفق: ${res.message || 'خطا'}`);
+    const detail = res.errorMessage || res.message || res.errorCode || 'خطا';
+    toast(`✗ تشخیص خودکار تأیید نشد: ${detail}`);
   }
 };
 
