@@ -156,7 +156,7 @@ import { discoverModels } from './js/discovery.js';
 import { getProviderProfile, listProviders } from './js/registry.js';
 import { getAdapter } from './js/adapters.js';
 import { discoverApiConfiguration, normalizeBaseUrl } from './js/smartSetup.js';
-import { normalizeApiEntry, sanitizeHistoryEntry, toExportPayload, STORAGE_KEY, MAX_HISTORY, uid } from './js/storage.js';
+import { normalizeApiEntry, sanitizeHistoryEntry, toExportPayload, parseRestoreFileText, STORAGE_KEY, MAX_HISTORY, uid } from './js/storage.js';
 import { computeHealthScore } from './js/score.js';
 import { buildCapabilityMatrix } from './js/capabilities.js';
 import { buildDiagnostics } from './js/diagnostics.js';
@@ -315,7 +315,7 @@ function render() {
     const hist = (api.history || []).slice().reverse();
     const isCors = uKey === 'curl';
     const testBtnLabel = isCors ? 'CURL' : 'Test';
-    const testBtnOnclick = isCors ? `copyCurl('${api.id}')` : `checkOne('${api.id}')`;
+    const testAction = isCors ? 'copy-curl' : 'check';
 
     const histHtml = hist.length ? `
       <details class="history">
@@ -340,7 +340,7 @@ function render() {
           <span>برای انتخاب کلیک کنید</span>
         </div>
         <div class="model-list">
-          ${disc.map(m => `<span class="model-chip" onclick="selectModel('${api.id}', '${escapeAttr(m.id)}')">${escapeHtml(m.id)}</span>`).join('')}
+          ${disc.map(m => `<button type="button" class="model-chip" data-action="select-model" data-api-id="${escapeAttr(api.id)}" data-model="${escapeAttr(m.id)}">${escapeHtml(m.id)}</button>`).join('')}
         </div>
       </div>
     ` : '';
@@ -369,11 +369,11 @@ function render() {
             </div>
           </div>
           <div class="token-actions">
-            <button class="btn-ghost btn-sm" data-details-btn="${api.id}" aria-expanded="false" aria-controls="details-${api.id}" onclick="toggleDetails('${api.id}')">مشخصات</button>
-            <button class="btn-primary btn-sm" onclick="${testBtnOnclick}">${testBtnLabel}</button>
+            <button type="button" class="btn-ghost btn-sm" data-action="toggle-details" data-api-id="${escapeAttr(api.id)}" data-details-btn="${escapeAttr(api.id)}" aria-expanded="false" aria-controls="details-${escapeAttr(api.id)}">مشخصات</button>
+            <button type="button" class="btn-primary btn-sm" data-action="${testAction}" data-api-id="${escapeAttr(api.id)}">${testBtnLabel}</button>
           </div>
         </div>
-        <div class="card-details" id="details-${api.id}">
+        <div class="card-details" id="details-${escapeAttr(api.id)}">
           <div class="card-meta">
             <span>آخرین چک: ${formatTime(api.lastChecked)}</span>
             <span>تأخیر: ${lat}</span>
@@ -385,13 +385,13 @@ function render() {
           <div class="field-row">
             <span class="field-label">Base URL</span>
             <div class="field-value">${escapeHtml(api.baseUrl)}</div>
-            <button class="btn-ghost btn-sm" onclick="copyText('${escapeAttr(api.baseUrl)}')">کپی</button>
+            <button type="button" class="btn-ghost btn-sm" data-action="copy-base-url" data-api-id="${escapeAttr(api.id)}">کپی</button>
           </div>
           <div class="field-row">
             <span class="field-label">Token</span>
-            <div class="field-value" id="key-${api.id}">${maskKey(api.apiKey)}</div>
-            <button class="btn-ghost btn-sm" onclick="toggleKey('${api.id}')">👁</button>
-            <button class="btn-ghost btn-sm" onclick="copyText('${escapeAttr(api.apiKey)}')">کپی</button>
+            <div class="field-value" id="key-${escapeAttr(api.id)}">${maskKey(api.apiKey)}</div>
+            <button type="button" class="btn-ghost btn-sm" data-action="toggle-key" data-api-id="${escapeAttr(api.id)}">👁</button>
+            <button type="button" class="btn-ghost btn-sm" data-action="copy-key" data-api-id="${escapeAttr(api.id)}">کپی</button>
           </div>
           ${api.notes ? `<div class="card-meta">📝 ${escapeHtml(api.notes)}</div>` : ''}
           ${api.lastMessage ? `<div class="last-msg">${escapeHtml(api.lastMessage)}</div>` : ''}
@@ -399,16 +399,63 @@ function render() {
           ${diagHtml}
           ${histHtml}
           <div class="card-actions">
-            <button class="btn-primary btn-sm" onclick="checkOne('${api.id}')">چک کردن</button>
-            <button class="btn-ghost btn-sm" onclick="discoverOne('${api.id}')">🔍 کشف مدل‌ها</button>
-            <button class="btn-ghost btn-sm" onclick="copyCurl('${api.id}')">📋 کپی curl</button>
-            <button class="btn-ghost btn-sm" onclick="editApi('${api.id}')">ویرایش</button>
-            <button class="btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteApi('${api.id}')">حذف</button>
+            <button type="button" class="btn-primary btn-sm" data-action="check" data-api-id="${escapeAttr(api.id)}">چک کردن</button>
+            <button type="button" class="btn-ghost btn-sm" data-action="discover" data-api-id="${escapeAttr(api.id)}">🔍 کشف مدل‌ها</button>
+            <button type="button" class="btn-ghost btn-sm" data-action="copy-curl" data-api-id="${escapeAttr(api.id)}">📋 کپی curl</button>
+            <button type="button" class="btn-ghost btn-sm" data-action="edit" data-api-id="${escapeAttr(api.id)}">ویرایش</button>
+            <button type="button" class="btn-ghost btn-sm" style="color:var(--danger)" data-action="delete" data-api-id="${escapeAttr(api.id)}">حذف</button>
           </div>
         </div>
       </article>
     `;
   }).join('');
+}
+
+c.addEventListener('click', async (event) => {
+  const target = event.target.closest('[data-action]');
+  if (!target || !c.contains(target)) return;
+  const action = target.dataset.action;
+  const id = target.dataset.apiId;
+  if (!id) return;
+  if (action === 'toggle-details') return toggleDetails(id);
+  if (action === 'check') return checkOne(id);
+  if (action === 'copy-curl') return copyCurl(id);
+  if (action === 'discover') return discoverOne(id);
+  if (action === 'edit') return editApi(id);
+  if (action === 'delete') return deleteApi(id);
+  if (action === 'toggle-key') return toggleKey(id);
+  if (action === 'copy-base-url') {
+    const api = apis.find(a => a.id === id);
+    if (api) return copyText(api.baseUrl);
+  }
+  if (action === 'copy-key') {
+    const api = apis.find(a => a.id === id);
+    if (api) return copyText(api.apiKey);
+  }
+  if (action === 'select-model') return selectModel(id, target.dataset.model || '');
+});
+
+function toggleDetails(id) {
+  const el = document.getElementById('details-' + id);
+  if (!el) return;
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.card-details.open').forEach(other => {
+    other.classList.remove('open');
+    const otherId = other.id.replace(/^details-/, '');
+    const otherBtn = document.querySelector('[data-details-btn="' + CSS.escape(otherId) + '"]');
+    if (otherBtn) {
+      otherBtn.textContent = 'مشخصات';
+      otherBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+  if (!wasOpen) {
+    el.classList.add('open');
+    const btn = document.querySelector('[data-details-btn="' + CSS.escape(id) + '"]');
+    if (btn) {
+      btn.textContent = 'بستن';
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  }
 }
 
 function openModal(id = null) {
@@ -530,15 +577,15 @@ $('#apiForm').onsubmit = e => {
   toast(id ? 'API ویرایش شد.' : 'API افزوده شد.');
 };
 
-window.editApi = id => openModal(id);
-window.deleteApi = id => {
+function editApi(id) { return openModal(id); }
+function deleteApi(id) {
   if (!confirm('آیا از حذف این API مطمئن هستید؟')) return;
   apis = apis.filter(a => a.id !== id);
   save(); render();
   toast('حذف شد.');
 };
 
-window.toggleKey = id => {
+function toggleKey(id) {
   const api = apis.find(a => a.id === id);
   if (!api) return;
   const el = document.getElementById('key-' + id);
@@ -552,11 +599,11 @@ window.toggleKey = id => {
   }
 };
 
-window.copyText = async t => {
+async function copyText(t) {
   try { await navigator.clipboard.writeText(t); toast('در کلیپ‌بورد کپی شد.'); } catch { toast('کپی ناموفق بود.'); }
 };
 
-window.copyCurl = async id => {
+async function copyCurl(id) {
   const api = apis.find(a => a.id === id);
   if (!api) return;
   const adapter = getAdapter(api.providerId || 'custom');
@@ -564,7 +611,7 @@ window.copyCurl = async id => {
   try { await navigator.clipboard.writeText(cmd); toast('دستور curl کپی شد.'); } catch { toast('کپی ناموفق بود.'); }
 };
 
-window.selectModel = (id, modelName) => {
+function selectModel(id, modelName) {
   const api = apis.find(a => a.id === id);
   if (!api) return;
   api.model = modelName;
@@ -606,12 +653,12 @@ async function performCheck(api) {
   save(); render();
 }
 
-window.checkOne = id => {
+function checkOne(id) {
   const api = apis.find(a => a.id === id);
   if (api) performCheck(api);
 };
 
-window.discoverOne = async id => {
+async function discoverOne(id) {
   const api = apis.find(a => a.id === id);
   if (!api) return;
   toast('در حال کشف مدل‌ها...');
@@ -699,16 +746,22 @@ $('#importBtn').onclick = () => {
   input.type = 'file';
   input.accept = '.json,application/json';
   input.onchange = async () => {
-    const file = input.files[0];
+    const file = input.files && input.files[0];
     if (!file) return;
     try {
-      const data = JSON.parse(await file.text());
-      if (!Array.isArray(data)) throw 0;
-      if (!confirm(`${data.length} مورد وارد شود؟`)) return;
-      apis = data.map(normalizeApiEntry);
+      const restored = parseRestoreFileText(await file.text());
+      if (!confirm(`${restored.length} مورد وارد شود؟`)) return;
+      apis = restored;
       save(); render();
       toast('اطلاعات با موفقیت وارد شد.');
-    } catch { toast('خطا در خواندن فایل JSON.'); }
+    } catch (err) {
+      const message = err && err.message === 'INVALID_JSON'
+        ? 'فایل JSON معتبر نیست.'
+        : err && err.message === 'NO_SUPPORTED_API_RECORDS'
+          ? 'ساختار فایل معتبر است اما رکورد API قابل پشتیبانی پیدا نشد.'
+          : 'خطا در خواندن یا اعتبارسنجی فایل JSON.';
+      toast(message);
+    }
   };
   input.click();
 };
