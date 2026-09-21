@@ -45,6 +45,8 @@ export function getAdapter(providerId) {
         } else {
           headers['x-api-key'] = apiKey;
         }
+      } else if (authType === 'x-goog-api-key') {
+        headers['x-goog-api-key'] = apiKey;
       } else if (authType === 'query') {
         const sep = url.includes('?') ? '&' : '?';
         url = `${url}${sep}key=${encodeURIComponent(apiKey)}`;
@@ -73,6 +75,8 @@ export function getAdapter(providerId) {
         } else {
           headers['x-api-key'] = apiKey;
         }
+      } else if (authType === 'x-goog-api-key') {
+        headers['x-goog-api-key'] = apiKey;
       } else if (authType === 'query') {
         const sep = url.includes('?') ? '&' : '?';
         url = `${url}${sep}key=${encodeURIComponent(apiKey)}`;
