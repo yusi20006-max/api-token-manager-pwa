@@ -23,5 +23,5 @@ test('detectAuthType assigns correct auth strategy', () => {
   assert.strictEqual(detectAuthType('zenmux', 'https://zenmux.ai/api/v1'), 'bearer');
   assert.strictEqual(detectAuthType('openai', 'https://api.openai.com/v1'), 'bearer');
   assert.strictEqual(detectAuthType('anthropic', 'https://api.anthropic.com/v1'), 'x-api-key');
-  assert.strictEqual(detectAuthType('google', 'https://generativelanguage.googleapis.com'), 'query');
+  assert.strictEqual(detectAuthType('google', 'https://generativelanguage.googleapis.com'), 'x-goog-api-key');
 });

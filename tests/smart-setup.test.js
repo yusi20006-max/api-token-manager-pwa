@@ -82,3 +82,9 @@ test('Smart Setup detects OrcaRouter from its canonical API URL', async () => {
   assert.strictEqual(detectProvider('https://api.orcarouter.ai/v1'), 'orcarouter');
   assert.strictEqual(detectAuthType('orcarouter', 'https://api.orcarouter.ai/v1'), 'bearer');
 });
+
+
+test('Smart Setup selects Google header authentication', async () => {
+  const { detectAuthType } = await import('../js/smartSetup.js?google-auth=' + Date.now());
+  assert.strictEqual(detectAuthType('google', 'https://generativelanguage.googleapis.com/v1beta'), 'x-goog-api-key');
+});
