@@ -24,9 +24,12 @@ export function classifyError(err, response = null, responseBody = '') {
     if (err.name === 'AbortError' || err.message?.includes('aborted') || err.message?.includes('timeout')) {
       return { code: ERROR_CODES.TIMEOUT, message: 'درخواست به دلیل انقضای زمان (Timeout) متوقف شد.' };
     }
+    if (err.cors === true || err.code === 'ERR_CORS' || err.name === 'CorsError') {
+      return { code: ERROR_CODES.CORS_BLOCKED, message: 'دسترسی مرورگر به سرویس به دلیل CORS مسدود شد.' };
+    }
     if (err.message && (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('load failed'))) {
       // Browser fetch errors do not reliably distinguish CORS from DNS/TLS,
-      // offline, firewall, or other transport failures. Without stronger
+      // offline, firewall, or other transport failures. Without explicit CORS
       // evidence, classify them conservatively as a network error.
       return { code: ERROR_CODES.NETWORK_ERROR, message: 'خطای شبکه یا دسترسی مرورگر به سرویس رخ داد.' };
     }

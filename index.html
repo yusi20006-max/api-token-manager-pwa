@@ -674,6 +674,7 @@ async function discoverOne(id) {
     toast(`✓ ${res.models.length} مدل کشف شد.`);
   } else {
     if (res.errorCode === 'CORS_BLOCKED') toast('⚠ مرورگر توسط CORS مسدود شد. از curl fallback استفاده کنید.');
+    else if (res.errorCode === 'NETWORK_ERROR') toast('⚠ دسترسی شبکه یا مرورگر به سرویس ممکن نیست. از curl fallback برای بررسی مستقل استفاده کنید.');
     else toast(`✗ کشف مدل ناموفق: ${res.errorMessage}`);
   }
 };

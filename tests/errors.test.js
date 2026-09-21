@@ -41,3 +41,14 @@ test('ambiguous browser fetch errors are not treated as proven CORS', () => {
     assert.strictEqual(classifyError(new Error(message)).code, ERROR_CODES.NETWORK_ERROR);
   }
 });
+
+
+test('CORS_BLOCKED requires explicit browser evidence', () => {
+  const explicit = new Error('Failed to fetch');
+  explicit.cors = true;
+  assert.strictEqual(classifyError(explicit).code, ERROR_CODES.CORS_BLOCKED);
+
+  const named = new Error('CORS policy blocked');
+  named.name = 'CorsError';
+  assert.strictEqual(classifyError(named).code, ERROR_CODES.CORS_BLOCKED);
+});
