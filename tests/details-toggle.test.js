@@ -5,8 +5,9 @@ import { readFileSync } from 'node:fs';
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 
 test('details button is wired to a global handler from the ES module bridge', async () => {
-  assert.match(html, /data-details-btn="\$\{api\.id\}"/);
-  assert.match(html, /onclick="toggleDetails\('\$\{api\.id\}'\)"/);
+  assert.match(html, /data-details-btn="\$\{escapeAttr\(api\.id\)\}"/);
+  assert.match(html, /data-action="toggle-details"/);
+  assert.doesNotMatch(html, /onclick="toggleDetails/);
 
   const elements = new Map();
   const makeEl = (id, open = false) => {
