@@ -153,24 +153,3 @@ export function clearAllApiData() {
   if (typeof localStorage === 'undefined') return;
   localStorage.removeItem(STORAGE_KEY);
 }
-
-    // Add a single reset control without changing the existing compact toolbar markup.
-    const toolbar = document.querySelector('.toolbar');
-    const checkAllBtn = document.getElementById('checkAllBtn');
-    if (!toolbar || !checkAllBtn || document.getElementById('resetAllBtn')) return;
-
-    const resetBtn = document.createElement('button');
-    resetBtn.id = 'resetAllBtn';
-    resetBtn.className = 'btn-ghost';
-    resetBtn.type = 'button';
-    resetBtn.textContent = '🧹 ریست / پاک کردن همه';
-    resetBtn.title = 'حذف همه APIهای ذخیره‌شده و شروع تست تمیز';
-    resetBtn.onclick = () => {
-      if (!confirm('همه APIها و داده‌های تست محلی پاک شوند؟ این کار قابل بازگشت نیست.')) return;
-      clearAllApiData();
-      sessionStorage.removeItem('api-token-manager-auto');
-      window.location.reload();
-    };
-    checkAllBtn.insertAdjacentElement('afterend', resetBtn);
-  });
-}
