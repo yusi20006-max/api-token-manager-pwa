@@ -88,3 +88,20 @@ test('Smart Setup selects Google header authentication', async () => {
   const { detectAuthType } = await import('../js/smartSetup.js?google-auth=' + Date.now());
   assert.strictEqual(detectAuthType('google', 'https://generativelanguage.googleapis.com/v1beta'), 'x-goog-api-key');
 });
+
+
+test('Smart Setup marks conflicting discovery and health authentication evidence explicitly', async () => {
+  const { deriveAuthenticationEvidence } = await import('../js/smartSetup.js?auth-evidence=' + Date.now());
+  assert.deepStrictEqual(deriveAuthenticationEvidence(false, true), {
+    state: 'CONFLICTING_EVIDENCE',
+    source: 'discovery+health'
+  });
+  assert.deepStrictEqual(deriveAuthenticationEvidence(true, true), {
+    state: 'VERIFIED',
+    source: 'discovery+health'
+  });
+  assert.deepStrictEqual(deriveAuthenticationEvidence(null, true), {
+    state: 'HEALTH_CONFIRMED',
+    source: 'health'
+  });
+});
