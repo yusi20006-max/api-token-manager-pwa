@@ -25,7 +25,10 @@ export function classifyError(err, response = null, responseBody = '') {
       return { code: ERROR_CODES.TIMEOUT, message: 'درخواست به دلیل انقضای زمان (Timeout) متوقف شد.' };
     }
     if (err.message && (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('load failed'))) {
-      return { code: ERROR_CODES.CORS_BLOCKED, message: 'خطای شبکه یا CORS (لطفاً از دستور curl استفاده کنید).' };
+      // Browser fetch errors do not reliably distinguish CORS from DNS/TLS,
+      // offline, firewall, or other transport failures. Without stronger
+      // evidence, classify them conservatively as a network error.
+      return { code: ERROR_CODES.NETWORK_ERROR, message: 'خطای شبکه یا دسترسی مرورگر به سرویس رخ داد.' };
     }
     return { code: ERROR_CODES.NETWORK_ERROR, message: err.message || 'خطای ناشناخته شبکه' };
   }
