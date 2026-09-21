@@ -6,9 +6,9 @@
 
 - افزودن / ویرایش / حذف API (نام، provider، Base URL، کلید، مدل، test endpoint، یادداشت)
 - Smart Setup: ورود URL + کلید → 🔍 تشخیص خودکار (provider، Base URL، auth، مدل‌ها)
-- Provider detection: OpenAI، Anthropic، OpenRouter، DeepSeek، Google Gemini، Groq، ZenMux، Custom
+- Provider detection: OpenAI، Anthropic، OpenRouter، DeepSeek، Google Gemini، Groq، ZenMux، OrcaRouter، Custom
 - Health Engine: `checkApi(api)` با نتیجه استاندارد `HealthResult`
-- Error classification قطعی: `UNAUTHORIZED`، `FORBIDDEN`، `NOT_FOUND`، `RATE_LIMITED`، `SERVER_ERROR`، `TIMEOUT`، `CORS_BLOCKED`، `NETWORK_ERROR` و غیره (CORS هرگز با کلید نامعتبر اشتباه گرفته نمی‌شود)
+- Error classification قطعی: `UNAUTHORIZED`، `FORBIDDEN`، `NOT_FOUND`، `RATE_LIMITED`، `SERVER_ERROR`، `TIMEOUT`، `CORS_BLOCKED`، `NETWORK_ERROR` و غیره. در مرورگر، خطای مبهم fetch به‌عنوان `NETWORK_ERROR` باقی می‌ماند و `CORS_BLOCKED` فقط با evidence صریح ثبت می‌شود.
 - Model discovery: `discoverModels(api)` با تفکیک success / empty / auth-failed / CORS / network
 - Capability matrix: `models`، `chat`، `responses`، `embeddings`، `streaming`، `vision`، `tools` با وضعیت `SUPPORTED` / `UNSUPPORTED` / `UNKNOWN` / `NOT_TESTED` (صرف وجود `/models` به معنی پشتیبانی inference نیست)
 - Health score قطعی ۰–۱۰۰ همراه breakdown (reachability، auth، endpoint، models، latency؛ inference تست‌نشده = UNKNOWN)
@@ -18,10 +18,23 @@
 - فیلتر provider و status + جستجوی موجود
 - تاریخچه امن هر چک (timestamp، status، latency، errorCode — بدون secret)
 - Auto-check با intervalهای ۵/۱۵/۳۰/۶۰ دقیقه، بدون duplicate timer
-- Curl fallback برای CORS-blocked (نتیجه curl به‌عنوان browser result جعل نمی‌شود)
+- Curl fallback برای مواردی که browser evidence صریحاً اجازه دهد؛ نتیجه curl به‌عنوان browser result جعل نمی‌شود
 - Export امن: پیش‌فرض فقط پیکربندی بدون secret؛ export شامل secret فقط با تأیید صریح و هشدار
 - ذخیره‌سازی محلی (LocalStorage) با migration سازگار
-- PWA: manifest، service worker (`api-token-manager-v2`)، آفلاین، موبایل‌فرندلی
+- PWA: manifest، service worker (`api-token-manager-v3`)، آفلاین، موبایل‌فرندلی؛ فقط assetهای static همان origin cache می‌شوند و API request/responseها cache نمی‌شوند
+
+## OrcaRouter
+
+- Base URL: `https://api.orcarouter.ai/v1`
+- Auth: `Authorization: Bearer <KEY>`
+- Models: `GET /models`
+- OpenAI-compatible: `POST /chat/completions`، `POST /responses`
+- Runtime smoke tests use mocked HTTP fixtures; live provider credentials are not required in CI.
+
+## Google Gemini
+
+- Auth: `x-goog-api-key: <KEY>`
+- API keys are not placed in Google request URLs by the normal adapter or Smart Setup path.
 
 ## ZenMux (target واقعی)
 
@@ -33,14 +46,32 @@
 
 ## تست‌ها
 
+Node regression suite:
+
 ```bash
 npm test
 ```
 
-## امنیت
+Browser/PWA regression suite:
+
+```bash
+npm install
+npx playwright install chromium
+npx playwright test
+```
+
+این suite بدون credential واقعی provider اجرا می‌شود و boot، delegated UI، reset/storage isolation و Service Worker cache isolation را پوشش می‌دهد.
+
+## قراردادهای امنیت و runtime
 
 - هیچ کلیدی در console، history، HealthResult، error، DOM، URL، export پیش‌فرض یا git commit قرار نمی‌گیرد.
-- CORS با احراز هویت ناموفق ترکیب نمی‌شود.
+- CORS با احراز هویت ناموفق ترکیب نمی‌شود؛ browser-ambiguous fetch به‌طور صادقانه `NETWORK_ERROR` است.
+- Smart Setup شواهد discovery و health را جدا نگه می‌دارد و در تضاد 401/200 حالت `CONFLICTING_EVIDENCE` را گزارش می‌کند.
+- Capability Matrix یک evidence ledger است: `SUPPORTED` فقط با evidence واقعی ثبت می‌شود و `UNKNOWN`/`NOT_TESTED` به معنی عدم اجرای inference probe است.
+- Reset فقط state مدیریت‌شده API/session را پاک می‌کند و state نامرتبط را دست‌نخورده می‌گذارد.
+- Service Worker فقط assetهای static همان origin را cache می‌کند؛ requestهای provider API، `Authorization` و query-authenticated URLs cache نمی‌شوند.
+
+جزئیات قراردادها در `docs/PROVIDER-RUNTIME-CONTRACT.md` و `docs/CORS-ERROR-CONTRACT.md` نگهداری می‌شود.
 
 ## لینک
 
