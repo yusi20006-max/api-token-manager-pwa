@@ -41,8 +41,10 @@ test('clearAllApiData removes the persisted API record set', () => {
 test('reset control remains wired to the canonical reset boundary', async () => {
   const fs = await import('node:fs/promises');
   const source = await fs.readFile(new URL('../js/storage.js', import.meta.url), 'utf8');
-  assert.match(source, /id = 'resetAllBtn'/);
-  assert.match(source, /🧹 ریست \/ پاک کردن همه/);
-  assert.equal((source.match(/clearAllApiData\(\);/g) || []).length, 1);
-  assert.match(source, /window\.location\.reload\(\)/);
+  const html = await fs.readFile(new URL('../index.html', import.meta.url), 'utf8');
+  assert.match(html, /id = 'resetAllBtn'/);
+  assert.match(html, /🧹 ریست \/ پاک کردن همه/);
+  assert.equal((html.match(/clearAllApiData\(\);/g) || []).length, 1);
+  assert.match(html, /window\.location\.reload\(\)/);
+  assert.doesNotMatch(source, /resetAllBtn/);
 });
