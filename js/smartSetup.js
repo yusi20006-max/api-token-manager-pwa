@@ -139,11 +139,29 @@ export async function discoverApiConfiguration(inputUrl, apiKey) {
   const discoveryResult = await discoverModels(tempApi);
   const healthResult = await checkApi(tempApi);
 
-  const reachable = healthResult.reachable;
-  const authenticated = healthResult.authenticated;
-  const verified = discoveryResult.success && reachable === true && authenticated === true;
-  const errorCode = discoveryResult.success ? healthResult.errorCode : discoveryResult.errorCode;
-  const errorMessage = discoveryResult.success ? healthResult.errorMessage : discoveryResult.errorMessage;
+  const verification = {
+    discovery: {
+      success: discoveryResult.success === true,
+      reachable: discoveryResult.reachable ?? null,
+      authenticated: discoveryResult.authenticated ?? null,
+      httpStatus: discoveryResult.httpStatus ?? null,
+      errorCode: discoveryResult.errorCode || null,
+      errorMessage: discoveryResult.errorMessage || null
+    },
+    health: {
+      reachable: healthResult.reachable ?? null,
+      authenticated: healthResult.authenticated ?? null,
+      httpStatus: healthResult.httpStatus ?? null,
+      errorCode: healthResult.errorCode || null,
+      errorMessage: healthResult.errorMessage || null
+    }
+  };
+  const verified = verification.discovery.success &&
+    verification.health.reachable === true &&
+    verification.health.authenticated === true;
+  const errorSource = verification.discovery.success ? 'health' : 'discovery';
+  const errorCode = verification[errorSource].errorCode;
+  const errorMessage = verification[errorSource].errorMessage;
 
   return {
     success: verified,
@@ -153,9 +171,12 @@ export async function discoverApiConfiguration(inputUrl, apiKey) {
     baseUrl: tempApi.baseUrl,
     authType,
     protocol: 'OpenAI-compatible / REST',
-    reachable,
-    authenticated,
-    httpStatus: healthResult.httpStatus ?? discoveryResult.httpStatus ?? null,
+    reachable: verification.health.reachable,
+    authenticated: verification.health.authenticated,
+    authenticationSource: 'health',
+    reachabilitySource: 'health',
+    verification,
+    httpStatus: verification.health.httpStatus ?? verification.discovery.httpStatus ?? null,
     latencyMs: healthResult.latencyMs ?? null,
     errorCode: errorCode || null,
     errorMessage: errorMessage || null,
