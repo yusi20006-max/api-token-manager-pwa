@@ -36,10 +36,11 @@ test('reset clears managed state but preserves unrelated localStorage', async ({
 
 test('service worker is registered and dynamic model endpoint is not cached', async ({ page }) => {
   await page.goto('/');
-  await page.evaluate(async () => {
-    if (!('serviceWorker' in navigator)) throw new Error('Service Worker API unavailable');
-    await navigator.serviceWorker.ready;
-  });
+  await expect.poll(async () => page.evaluate(async () => {
+    if (!('serviceWorker' in navigator)) return 'unsupported';
+    const registration = await navigator.serviceWorker.getRegistration();
+    return registration?.active?.state || 'missing';
+  }), { timeout: 10000 }).toBe('activated');
 
   const first = await page.evaluate(async () => {
     const response = await fetch('/models');
