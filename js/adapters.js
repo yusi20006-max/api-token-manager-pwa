@@ -94,7 +94,8 @@ export function getAdapter(providerId) {
 
       const [method, path] = definition.split(/\s+/, 2);
       const auth = this.buildRequest({ ...api, testEndpoint: '', model: '' });
-      const url = auth.url.replace(/\/$/, '') + '/' + path.replace(/^\//, '');
+      const baseUrl = (api.baseUrl || profile.baseUrl || '').replace(/\/$/, '');
+      const url = baseUrl + '/' + path.replace(/^\//, '');
       const request = { url, method, headers: auth.headers };
       if (body !== undefined && method !== 'GET') {
         request.headers['Content-Type'] = 'application/json';
