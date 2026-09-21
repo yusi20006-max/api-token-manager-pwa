@@ -75,3 +75,10 @@ test('Smart Setup exposes independent discovery and health authentication eviden
     globalThis.fetch = originalFetch;
   }
 });
+
+
+test('Smart Setup detects OrcaRouter from its canonical API URL', async () => {
+  const { detectProvider, detectAuthType } = await import('../js/smartSetup.js?orcarouter=' + Date.now());
+  assert.strictEqual(detectProvider('https://api.orcarouter.ai/v1'), 'orcarouter');
+  assert.strictEqual(detectAuthType('orcarouter', 'https://api.orcarouter.ai/v1'), 'bearer');
+});
