@@ -42,3 +42,27 @@ test('OrcaRouter is a first-class OpenAI-compatible provider', () => {
   assert.strictEqual(req.url, 'https://api.orcarouter.ai/v1/models');
   assert.strictEqual(req.headers.Authorization, 'Bearer TEST-ORCA-KEY');
 });
+
+
+test('Google uses header authentication without putting the API key in the URL', () => {
+  const profile = getProviderProfile('google');
+  assert.strictEqual(profile.authType, 'x-goog-api-key');
+
+  const adapter = getAdapter('google');
+  const req = adapter.buildRequest({
+    baseUrl: profile.baseUrl,
+    apiKey: 'TEST-GOOGLE-KEY',
+    authType: profile.authType
+  });
+  assert.strictEqual(req.url, 'https://generativelanguage.googleapis.com/v1beta/models');
+  assert.strictEqual(req.headers['x-goog-api-key'], 'TEST-GOOGLE-KEY');
+  assert.ok(!req.url.includes('TEST-GOOGLE-KEY'));
+
+  const modelsReq = adapter.buildModelsRequest({
+    baseUrl: profile.baseUrl,
+    apiKey: 'TEST-GOOGLE-KEY',
+    authType: profile.authType
+  });
+  assert.strictEqual(modelsReq.headers['x-goog-api-key'], 'TEST-GOOGLE-KEY');
+  assert.ok(!modelsReq.url.includes('key='));
+});
