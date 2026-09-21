@@ -32,5 +32,12 @@ test('classifyError handles network and timeout errors', () => {
   assert.strictEqual(classifyError(abortErr).code, ERROR_CODES.TIMEOUT);
 
   const netErr = new Error('Failed to fetch');
-  assert.strictEqual(classifyError(netErr).code, ERROR_CODES.CORS_BLOCKED);
+  assert.strictEqual(classifyError(netErr).code, ERROR_CODES.NETWORK_ERROR);
+});
+
+
+test('ambiguous browser fetch errors are not treated as proven CORS', () => {
+  for (const message of ['Failed to fetch', 'NetworkError when attempting to fetch resource', 'load failed']) {
+    assert.strictEqual(classifyError(new Error(message)).code, ERROR_CODES.NETWORK_ERROR);
+  }
 });
