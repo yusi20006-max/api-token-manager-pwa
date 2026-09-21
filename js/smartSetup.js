@@ -139,12 +139,18 @@ export async function discoverApiConfiguration(inputUrl, apiKey) {
   const discoveryResult = await discoverModels(tempApi);
   const healthResult = await checkApi(tempApi);
 
+  const discoveryHttpStatus = discoveryResult.httpStatus ?? null;
+  const discoveryAuthFailed = ['INVALID_API_KEY', 'UNAUTHORIZED', 'FORBIDDEN'].includes(discoveryResult.errorCode);
+  const discoveryEvidence = {
+    reachable: discoveryResult.success === true || (typeof discoveryHttpStatus === 'number' && discoveryHttpStatus > 0),
+    authenticated: discoveryResult.success === true ? true : discoveryAuthFailed ? false : null
+  };
   const verification = {
     discovery: {
       success: discoveryResult.success === true,
-      reachable: discoveryResult.reachable ?? null,
-      authenticated: discoveryResult.authenticated ?? null,
-      httpStatus: discoveryResult.httpStatus ?? null,
+      reachable: discoveryEvidence.reachable,
+      authenticated: discoveryEvidence.authenticated,
+      httpStatus: discoveryHttpStatus,
       errorCode: discoveryResult.errorCode || null,
       errorMessage: discoveryResult.errorMessage || null
     },
