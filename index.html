@@ -157,7 +157,7 @@ import { discoverModels } from './js/discovery.js';
 import { getProviderProfile, listProviders } from './js/registry.js';
 import { getAdapter } from './js/adapters.js';
 import { discoverApiConfiguration, normalizeBaseUrl } from './js/smartSetup.js';
-import { normalizeApiEntry, sanitizeHistoryEntry, toExportPayload, parseRestoreFileText, STORAGE_KEY, MAX_HISTORY, uid } from './js/storage.js';
+import { normalizeApiEntry, sanitizeHistoryEntry, toExportPayload, parseRestoreFileText, STORAGE_KEY, MAX_HISTORY, uid, clearAllApiData } from './js/storage.js';
 import { computeHealthScore } from './js/score.js';
 import { buildCapabilityMatrix } from './js/capabilities.js';
 import { buildDiagnostics } from './js/diagnostics.js';
@@ -724,6 +724,24 @@ function startAuto() {
 
 function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
 
+function installResetControl() {
+  const toolbar = $('.toolbar');
+  const checkAllBtn = $('#checkAllBtn');
+  if (!toolbar || !checkAllBtn || $('#resetAllBtn')) return;
+  const resetBtn = document.createElement('button');
+  resetBtn.id = 'resetAllBtn';
+  resetBtn.className = 'btn-ghost';
+  resetBtn.type = 'button';
+  resetBtn.textContent = '🧹 ریست / پاک کردن همه';
+  resetBtn.title = 'حذف همه APIهای ذخیره‌شده و شروع تست تمیز';
+  resetBtn.onclick = () => {
+    if (!confirm('همه APIها و داده‌های تست محلی پاک شوند؟ این کار قابل بازگشت نیست.')) return;
+    clearAllApiData();
+    window.location.reload();
+  };
+  checkAllBtn.insertAdjacentElement('afterend', resetBtn);
+}
+
 $('#autoBtn').onclick = () => {
   autoEnabled = !autoEnabled;
   if (autoEnabled) { startAuto(); toast('بررسی خودکار فعال شد.'); }
@@ -785,6 +803,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
 }
 
+installResetControl();
 initTheme();
 load();
 updateAutoBtn();
