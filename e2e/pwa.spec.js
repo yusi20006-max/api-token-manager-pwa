@@ -1,7 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 test('PWA boots and uses delegated UI actions without inline handlers', async ({ page }) => {
+  const pageErrors = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
   await page.goto('/');
+  expect(pageErrors).toEqual([]);
   await expect(page).toHaveTitle(/مدیر توکن‌های API/);
   await expect(page.locator('#addBtn')).toBeVisible();
   await expect(page.locator('#resetAllBtn')).toBeVisible();
