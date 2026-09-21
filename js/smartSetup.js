@@ -109,6 +109,30 @@ export function detectAuthType(providerId, url) {
 }
 
 /**
+ * Normalizes endpoint-specific authentication evidence into an explicit state.
+ */
+export function deriveAuthenticationEvidence(discoveryAuthenticated, healthAuthenticated) {
+  const values = [discoveryAuthenticated, healthAuthenticated];
+  const known = values.filter((value) => typeof value === 'boolean');
+
+  let state = 'INCONCLUSIVE';
+  if (discoveryAuthenticated === true && healthAuthenticated === true) state = 'VERIFIED';
+  else if (discoveryAuthenticated === false && healthAuthenticated === false) state = 'AUTH_FAILED';
+  else if (known.length === 2 && discoveryAuthenticated !== healthAuthenticated) state = 'CONFLICTING_EVIDENCE';
+  else if (healthAuthenticated === true) state = 'HEALTH_CONFIRMED';
+  else if (discoveryAuthenticated === true) state = 'DISCOVERY_CONFIRMED';
+  else if (discoveryAuthenticated === false || healthAuthenticated === false) state = 'AUTH_FAILED';
+
+  const source = state === 'VERIFIED' ? 'discovery+health'
+    : state === 'CONFLICTING_EVIDENCE' ? 'discovery+health'
+    : state === 'HEALTH_CONFIRMED' ? 'health'
+    : state === 'DISCOVERY_CONFIRMED' ? 'discovery'
+    : 'none';
+
+  return { state, source };
+}
+
+/**
  * Full Smart Discovery Orchestration for an API input.
  */
 export async function discoverApiConfiguration(inputUrl, apiKey) {
@@ -167,6 +191,10 @@ export async function discoverApiConfiguration(inputUrl, apiKey) {
   const verified = verification.discovery.success &&
     verification.health.reachable === true &&
     verification.health.authenticated === true;
+  const authenticationEvidence = deriveAuthenticationEvidence(
+    verification.discovery.authenticated,
+    verification.health.authenticated
+  );
   const errorSource = verification.discovery.success ? 'health' : 'discovery';
   const errorCode = verification[errorSource].errorCode;
   const errorMessage = verification[errorSource].errorMessage;
@@ -182,6 +210,13 @@ export async function discoverApiConfiguration(inputUrl, apiKey) {
     reachable: verification.health.reachable,
     authenticated: verification.health.authenticated,
     authenticationSource: 'health',
+    authenticationState: authenticationEvidence.state,
+    authentication: {
+      state: authenticationEvidence.state,
+      source: authenticationEvidence.source,
+      discovery: verification.discovery.authenticated,
+      health: verification.health.authenticated
+    },
     reachabilitySource: 'health',
     verification,
     httpStatus: verification.health.httpStatus ?? verification.discovery.httpStatus ?? null,
