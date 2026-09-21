@@ -6,6 +6,7 @@ import { getProviderProfile } from './registry.js';
 
 export const STORAGE_KEY = 'api-token-manager-v3';
 export const MAX_HISTORY = 10;
+export const RESET_STORAGE_PREFIX = 'atm-';
 
 export function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -150,8 +151,22 @@ export function restoreApisFromPayload(data) {
 
 /** Remove all API data so the next page load starts as a clean test environment. */
 export function clearAllApiData() {
-  if (typeof localStorage === 'undefined') return;
-  localStorage.removeItem(STORAGE_KEY);
+  if (typeof localStorage !== 'undefined') {
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const key = localStorage.key(i);
+      if (key && (key === STORAGE_KEY || key.startsWith(RESET_STORAGE_PREFIX))) keys.push(key);
+    }
+    keys.forEach(key => localStorage.removeItem(key));
+  }
+  if (typeof sessionStorage !== 'undefined') {
+    const keys = [];
+    for (let i = 0; i < sessionStorage.length; i += 1) {
+      const key = sessionStorage.key(i);
+      if (key && (key === STORAGE_KEY || key.startsWith(RESET_STORAGE_PREFIX) || key === 'api-token-manager-auto')) keys.push(key);
+    }
+    keys.forEach(key => sessionStorage.removeItem(key));
+  }
 }
 
 
@@ -196,7 +211,7 @@ if (typeof window !== 'undefined') {
     resetBtn.onclick = () => {
       if (!confirm('همه APIها و داده‌های تست محلی پاک شوند؟ این کار قابل بازگشت نیست.')) return;
       clearAllApiData();
-      sessionStorage.removeItem('api-token-manager-auto');
+      clearAllApiData();
       window.location.reload();
     };
     checkAllBtn.insertAdjacentElement('afterend', resetBtn);
