@@ -154,64 +154,6 @@ export function clearAllApiData() {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-/** Global bridge for the inline `onclick` used by the token-row details button. */
-export function toggleDetails(id) {
-  if (typeof document === 'undefined') return;
-  const el = document.getElementById('details-' + id);
-  if (!el) return;
-  const wasOpen = el.classList.contains('open');
-
-  document.querySelectorAll('.card-details.open').forEach(other => {
-    other.classList.remove('open');
-    const otherId = other.id.replace(/^details-/, '');
-    const otherBtn = document.querySelector('[data-details-btn="' + otherId + '"]');
-    if (otherBtn) {
-      otherBtn.textContent = 'مشخصات';
-      otherBtn.setAttribute('aria-expanded', 'false');
-    }
-  });
-
-  if (!wasOpen) {
-    el.classList.add('open');
-    const btn = document.querySelector('[data-details-btn="' + id + '"]');
-    if (btn) {
-      btn.textContent = 'بستن';
-      btn.setAttribute('aria-expanded', 'true');
-    }
-  }
-}
-
-if (typeof window !== 'undefined') {
-  window.toggleDetails = toggleDetails;
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const importBtn = document.getElementById('importBtn');
-    if (importBtn) {
-      importBtn.onclick = () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json,application/json';
-        input.onchange = async () => {
-          const file = input.files && input.files[0];
-          if (!file) return;
-          try {
-            const restored = parseRestoreFileText(await file.text());
-            if (!confirm(`${restored.length} مورد وارد شود؟`)) return;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(restored));
-            window.location.reload();
-          } catch (err) {
-            const message = err && err.message === 'INVALID_JSON'
-              ? 'فایل JSON معتبر نیست.'
-              : err && err.message === 'NO_SUPPORTED_API_RECORDS'
-                ? 'ساختار فایل معتبر است اما رکورد API قابل پشتیبانی پیدا نشد.'
-                : 'خطا در خواندن یا اعتبارسنجی فایل JSON.';
-            alert(message);
-          }
-        };
-        input.click();
-      };
-    }
-
     // Add a single reset control without changing the existing compact toolbar markup.
     const toolbar = document.querySelector('.toolbar');
     const checkAllBtn = document.getElementById('checkAllBtn');
