@@ -53,3 +53,25 @@ test('checkApi keeps inference unknown on successful response without model evid
     globalThis.fetch = originalFetch;
   }
 });
+
+test('checkApi classifies browser-ambiguous fetch failures as NETWORK_ERROR', async () => {
+  globalThis.fetch = async () => {
+    throw new TypeError('Failed to fetch');
+  };
+
+  try {
+    const { checkApi } = await import('../js/engine.js?cors-contract=' + Date.now());
+    const result = await checkApi({
+      providerId: 'openai',
+      baseUrl: 'https://api.example.test/v1',
+      apiKey: 'test-key',
+      authType: 'bearer'
+    });
+
+    assert.strictEqual(result.errorCode, 'NETWORK_ERROR');
+    assert.strictEqual(result.reachable, false);
+    assert.strictEqual(result.authenticated, null);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
