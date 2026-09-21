@@ -234,6 +234,7 @@ function renderDashboard(list) {
 }
 
 let statusFilter = '';
+const c = $('#cards');
 
 function uiStatusKey(api) {
   const st = api.status || 'unknown';
@@ -297,7 +298,7 @@ function render() {
     return okQ && okP && okS;
   });
   renderDashboard(f);
-  const c = $('#cards'), e = $('#emptyState');
+  const e = $('#emptyState');
 
   if (!f.length) {
     c.innerHTML = '';
