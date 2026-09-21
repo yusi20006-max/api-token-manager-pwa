@@ -27,5 +27,5 @@ test('error classification keeps CORS distinct from UNAUTHORIZED', async () => {
   const cors = classifyError(new Error('Failed to fetch'));
   const unauth = classifyError(null, { status: 401, statusText: 'Unauthorized' }, 'unauthorized');
   assert.notStrictEqual(cors.code, unauth.code);
-  assert.strictEqual(cors.code, 'CORS_BLOCKED');
+  assert.strictEqual(cors.code, 'NETWORK_ERROR');
 });

@@ -50,7 +50,7 @@ export async function checkApi(api, timeoutMs = 12000) {
         errorMessage: msg,
         capabilities: {
           models: 'available',
-          inference: 'available'
+          inference: 'unknown'
         }
       });
     } else {
