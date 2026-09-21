@@ -85,6 +85,23 @@ export function getAdapter(providerId) {
       return { url, headers };
     },
 
+
+    buildEndpointRequest(api, endpoint, body) {
+      const configured = profile.endpoints && profile.endpoints[endpoint];
+      const fallbackPaths = { models: 'GET /models', chat: 'POST /chat/completions', responses: 'POST /responses' };
+      const definition = configured || fallbackPaths[endpoint];
+      if (!definition) throw new Error('Unsupported endpoint: ' + endpoint);
+
+      const [method, path] = definition.split(/\s+/, 2);
+      const auth = this.buildRequest({ ...api, testEndpoint: '', model: '' });
+      const url = auth.url.replace(/\/$/, '') + '/' + path.replace(/^\//, '');
+      const request = { url, method, headers: auth.headers };
+      if (body !== undefined && method !== 'GET') {
+        request.headers['Content-Type'] = 'application/json';
+        request.body = JSON.stringify(body);
+      }
+      return request;
+    },
     parseModelsResponse(data) {
       if (!data) return [];
       let list = [];
