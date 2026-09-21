@@ -83,6 +83,7 @@ export function detectProvider(url) {
   if (lower.includes('deepseek.com')) return 'deepseek';
   if (lower.includes('googleapis.com') || lower.includes('generativelanguage')) return 'google';
   if (lower.includes('groq.com')) return 'groq';
+  if (lower.includes('orcarouter.ai')) return 'orcarouter';
 
   return 'custom';
 }
@@ -98,6 +99,7 @@ export function detectAuthType(providerId, url) {
   if (providerId === 'deepseek') return 'bearer';
   if (providerId === 'google') return 'query';
   if (providerId === 'groq') return 'bearer';
+  if (providerId === 'orcarouter') return 'bearer';
 
   const profile = getProviderProfile(providerId);
   if (profile && profile.authType) return profile.authType;
