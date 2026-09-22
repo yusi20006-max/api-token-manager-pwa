@@ -58,7 +58,7 @@ export async function checkApi(api, timeoutMs = 12000) {
       return createHealthResult({
         status: 'failed',
         reachable: true,
-        authenticated: ![401, 403].includes(res.status),
+        authenticated: res.status >= 500 ? null : ![401, 403].includes(res.status),
         httpStatus: res.status,
         latencyMs,
         errorCode: errInfo.code,
