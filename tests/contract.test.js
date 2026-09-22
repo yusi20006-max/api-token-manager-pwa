@@ -13,3 +13,10 @@ test('createHealthResult produces required fields and ISO timestamp', () => {
   assert.ok(result.capabilities);
   assert.strictEqual(result.capabilities.models, 'unknown');
 });
+
+
+test('diagnostics model count falls back to discovered models', async () => {
+  const { buildDiagnostics } = await import('../js/diagnostics.js');
+  assert.strictEqual(buildDiagnostics({ api: { discoveredModels: [{ id: 'a' }] }, discovery: null }).models, 1);
+  assert.strictEqual(buildDiagnostics({ api: { discoveredModels: [] }, discovery: null }).models, 0);
+});
