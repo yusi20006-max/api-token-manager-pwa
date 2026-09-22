@@ -11,7 +11,7 @@ export function buildDiagnostics({ api, health = null, discovery = null, score =
     connectivity: health ? (health.reachable === true ? 'Reachable' : health.reachable === false ? 'Failed' : 'Unknown') : 'Unknown',
     httpStatus: health?.httpStatus ?? null,
     errorCode: health?.errorCode || null,
-    models: discovery?.models?.length ?? (api.discoveredModels || []).length ?? 0,
+    models: discovery?.models?.length ?? (api.discoveredModels || []).length,
     capabilities: capabilities || {},
     cors: health?.errorCode === 'CORS_BLOCKED' ? 'Blocked' : (health?.reachable ? 'OK' : 'Unknown'),
     latencyMs: health?.latencyMs ?? api.lastLatency ?? null,
