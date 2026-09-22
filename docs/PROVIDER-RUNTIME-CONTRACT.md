@@ -6,10 +6,10 @@ Each provider adapter is responsible for:
 - canonical base URL normalization;
 - authentication header/query construction;
 - model-listing request construction;
-- provider-specific endpoint paths;
+- explicitly declared provider endpoint paths;
 - response normalization without leaking secrets.
 
-The registry is the source of provider metadata; adapters are the source of request construction.
+The registry is the source of provider metadata and endpoint contracts; adapters are the source of request construction. Runtime endpoint requests never infer generic fallback paths.
 
 ## OrcaRouter
 
