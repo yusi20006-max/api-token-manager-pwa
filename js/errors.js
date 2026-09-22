@@ -33,7 +33,7 @@ export function classifyError(err, response = null, responseBody = '') {
       // evidence, classify them conservatively as a network error.
       return { code: ERROR_CODES.NETWORK_ERROR, message: 'خطای شبکه یا دسترسی مرورگر به سرویس رخ داد.' };
     }
-    return { code: ERROR_CODES.NETWORK_ERROR, message: err.message || 'خطای ناشناخته شبکه' };
+    return { code: ERROR_CODES.UNKNOWN, message: err.message || 'خطای ناشناخته' };
   }
 
   if (response) {
