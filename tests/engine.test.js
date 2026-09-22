@@ -75,3 +75,27 @@ test('checkApi classifies browser-ambiguous fetch failures as NETWORK_ERROR', as
     globalThis.fetch = originalFetch;
   }
 });
+
+
+test('checkApi marks server errors as reachable but authentication unknown', async () => {
+  globalThis.fetch = async () => response(503, 'temporary failure');
+  try {
+    const { checkApi } = await import('../js/engine.js?server-semantics=' + Date.now());
+    const result = await checkApi({ providerId: 'openai', baseUrl: 'https://api.example.test/v1', apiKey: 'test-key', authType: 'bearer' });
+    assert.strictEqual(result.httpStatus, 503);
+    assert.strictEqual(result.errorCode, 'SERVER_ERROR');
+    assert.strictEqual(result.reachable, true);
+    assert.strictEqual(result.authenticated, null);
+  } finally { globalThis.fetch = originalFetch; }
+});
+
+test('checkApi preserves UNKNOWN for unclassified exceptions', async () => {
+  globalThis.fetch = async () => { throw new Error('unexpected provider adapter failure'); };
+  try {
+    const { checkApi } = await import('../js/engine.js?unknown-semantics=' + Date.now());
+    const result = await checkApi({ providerId: 'openai', baseUrl: 'https://api.example.test/v1', apiKey: 'test-key', authType: 'bearer' });
+    assert.strictEqual(result.errorCode, 'UNKNOWN');
+    assert.strictEqual(result.reachable, null);
+    assert.strictEqual(result.authenticated, null);
+  } finally { globalThis.fetch = originalFetch; }
+});
