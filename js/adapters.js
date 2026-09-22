@@ -88,9 +88,8 @@ export function getAdapter(providerId) {
 
     buildEndpointRequest(api, endpoint, body) {
       const configured = profile.endpoints && profile.endpoints[endpoint];
-      const fallbackPaths = { models: 'GET /models', chat: 'POST /chat/completions', responses: 'POST /responses' };
-      const definition = configured || fallbackPaths[endpoint];
-      if (!definition) throw new Error('Unsupported endpoint: ' + endpoint);
+      if (!configured) throw new Error(`Provider ${profile.id} does not declare endpoint: ${endpoint}`);
+      const definition = configured;
 
       const [method, path] = definition.split(/\s+/, 2);
       const auth = this.buildRequest({ ...api, testEndpoint: '', model: '' });
