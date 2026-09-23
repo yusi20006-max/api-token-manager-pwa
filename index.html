@@ -439,6 +439,7 @@ c.addEventListener('click', async (event) => {
   if (action === 'check') return checkOne(id);
   if (action === 'copy-curl') return copyCurl(id);
   if (action === 'discover') return discoverOne(id);
+  if (action === 'import-yasinai') return importApiToYasinAI(id);
   if (action === 'edit') return editApi(id);
   if (action === 'delete') return deleteApi(id);
   if (action === 'toggle-key') return toggleKey(id);
