@@ -38,7 +38,7 @@ export async function importToYasinAI(api, config = getYasinAIConfig(), fetchImp
   try {
     response = await fetchImpl(config.baseUrl + '/v1/token/import', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-YasinAI-Bridge-Token': config.bridgeToken, Origin: window.location.origin },
+      headers: { 'Content-Type': 'application/json', 'X-YasinAI-Bridge-Token': config.bridgeToken, Origin: typeof window !== 'undefined' ? window.location.origin : 'http://localhost' },
       body: JSON.stringify({
         provider: api.providerId || 'custom',
         credential: api.apiKey,
