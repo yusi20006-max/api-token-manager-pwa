@@ -43,6 +43,7 @@ export async function importToYasinAI(api, config = getYasinAIConfig(), fetchImp
         provider: api.providerId || 'custom',
         credential: api.apiKey,
         model: api.model || undefined,
+        baseUrl: api.baseUrl || undefined,
         label: api.name || undefined,
         metadata: { source: 'api-token-manager-pwa' }
       })
