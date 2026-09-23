@@ -49,3 +49,33 @@ test('discoverModels handles malformed JSON, network errors, and timeout', async
   globalThis.fetch = async () => { const e = new Error('aborted'); e.name = 'AbortError'; throw e; }; result = await discoverModels({ providerId: 'openai', baseUrl: 'https://api.example.test/v1', apiKey: 'secret-key', authType: 'bearer' }, 1); assert.strictEqual(result.errorCode, 'TIMEOUT');
   globalThis.fetch = originalFetch;
 });
+
+test('discoverModels aborts a pending fetch through its real timeout controller', async () => {
+  const { discoverModels } = await import('../js/discovery.js?real-timeout=' + Date.now());
+  let observedSignal;
+  globalThis.fetch = async (_url, options = {}) => {
+    observedSignal = options.signal;
+    return await new Promise((resolve, reject) => {
+      const onAbort = () => {
+        observedSignal.removeEventListener('abort', onAbort);
+        const error = new Error('aborted by timeout');
+        error.name = 'AbortError';
+        reject(error);
+      };
+      if (observedSignal?.aborted) onAbort();
+      else observedSignal?.addEventListener('abort', onAbort, { once: true });
+    });
+  };
+  try {
+    const result = await discoverModels(
+      { providerId: 'openai', baseUrl: 'https://api.example.test/v1', apiKey: 'secret-key', authType: 'bearer' },
+      5
+    );
+    assert.strictEqual(result.errorCode, 'TIMEOUT');
+    assert.strictEqual(result.status, 'network_error');
+    assert.ok(observedSignal);
+    assert.strictEqual(observedSignal.aborted, true);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
