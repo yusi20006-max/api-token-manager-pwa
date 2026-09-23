@@ -8,12 +8,12 @@ test('importToYasinAI posts credential only in request body', async () => {
     assert.strictEqual(url, 'http://127.0.0.1:8000/v1/token/import');
     assert.ok(!url.includes('credential-value'));
     assert.strictEqual(options.headers['X-YasinAI-Bridge-Token'], 'bridge-token');
-    assert.strictEqual(JSON.parse(options.body).credential, 'credential-value');
+    const body = JSON.parse(options.body); assert.strictEqual(body.credential, 'credential-value'); assert.strictEqual(body.baseUrl, 'https://api.orcarouter.ai/v1');
     return { ok: true, status: 200, json: async () => ({ imported: true, idempotent: false, credential: { id: 'cred_123' }, health: { authenticated: true } }) };
   };
   try {
     const { importToYasinAI } = await import('../js/yasinai.js?import-test=' + Date.now());
-    const result = await importToYasinAI({ status: 'healthy', providerId: 'openai', apiKey: 'credential-value' }, { baseUrl: 'http://127.0.0.1:8000', bridgeToken: 'bridge-token' });
+    const result = await importToYasinAI({ status: 'healthy', providerId: 'orcarouter', apiKey: 'credential-value', baseUrl: 'https://api.orcarouter.ai/v1', model: 'orcarouter/auto' }, { baseUrl: 'http://127.0.0.1:8000', bridgeToken: 'bridge-token' });
     assert.strictEqual(result.success, true);
     assert.strictEqual(result.imported, true);
   } finally { globalThis.fetch = originalFetch; }
