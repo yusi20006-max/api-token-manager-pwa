@@ -62,6 +62,7 @@ main{max-width:920px;margin:0 auto;padding:16px 16px 80px}.toolbar{display:flex;
     <button class="btn-ghost btn-sm" id="themeBtn" title="تغییر تم">🌅</button>
     <button class="btn-ghost btn-sm" id="exportBtn" title="خروجی JSON">⬇️</button>
     <button class="btn-ghost btn-sm" id="importBtn" title="ورودی JSON">⬆️</button>
+    <button class="btn-ghost btn-sm" id="yasinAiConfigBtn" title="تنظیم اتصال Yasin-AI">⚙️ Yasin-AI</button>
   </div>
 </header>
 
@@ -161,6 +162,7 @@ import { normalizeApiEntry, sanitizeHistoryEntry, toExportPayload, parseRestoreF
 import { computeHealthScore } from './js/score.js';
 import { buildCapabilityMatrix } from './js/capabilities.js';
 import { buildDiagnostics } from './js/diagnostics.js';
+import { getYasinAIConfig, saveYasinAIConfig, importToYasinAI } from './js/yasinai.js';
 
 let apis = [], editId = null, autoTimer = null, autoEnabled = false;
 
@@ -416,6 +418,7 @@ function render() {
           <div class="card-actions">
             <button type="button" class="btn-primary btn-sm" data-action="check" data-api-id="${escapeAttr(api.id)}">چک کردن</button>
             <button type="button" class="btn-ghost btn-sm" data-action="discover" data-api-id="${escapeAttr(api.id)}">🔍 کشف مدل‌ها</button>
+            ${st === 'healthy' ? `<button type="button" class="btn-primary btn-sm" data-action="import-yasinai" data-api-id="${escapeAttr(api.id)}">⬆️ Import به Yasin-AI</button>` : ''}
             <button type="button" class="btn-ghost btn-sm" data-action="copy-curl" data-api-id="${escapeAttr(api.id)}">📋 کپی curl</button>
             <button type="button" class="btn-ghost btn-sm" data-action="edit" data-api-id="${escapeAttr(api.id)}">ویرایش</button>
             <button type="button" class="btn-ghost btn-sm" style="color:var(--danger)" data-action="delete" data-api-id="${escapeAttr(api.id)}">حذف</button>
@@ -742,6 +745,41 @@ function installResetControl() {
   };
   checkAllBtn.insertAdjacentElement('afterend', resetBtn);
 }
+
+async function configureYasinAI() {
+  const current = getYasinAIConfig();
+  const baseUrl = prompt('Base URL سرویس Yasin-AI:', current.baseUrl || 'http://127.0.0.1:8000');
+  if (baseUrl === null) return;
+  const bridgeToken = prompt('Bridge Token اتصال Yasin-AI:', current.bridgeToken || '');
+  if (bridgeToken === null) return;
+  try {
+    saveYasinAIConfig({ baseUrl, bridgeToken });
+    toast('تنظیمات اتصال Yasin-AI ذخیره شد.');
+  } catch (err) {
+    toast(err.message === 'YASINAI_BASE_URL_INVALID' ? 'Base URL معتبر نیست.' : 'Base URL را وارد کنید.');
+  }
+}
+
+async function importApiToYasinAI(id) {
+  const api = apis.find(a => a.id === id);
+  if (!api || api.status !== 'healthy') {
+    toast('فقط API سالم قابل Import به Yasin-AI است.');
+    return;
+  }
+  let config = getYasinAIConfig();
+  if (!config.baseUrl || !config.bridgeToken) {
+    await configureYasinAI();
+    config = getYasinAIConfig();
+  }
+  const result = await importToYasinAI(api, config);
+  if (!result.success) {
+    toast('✗ Import ناموفق: ' + result.message);
+    return;
+  }
+  toast(result.idempotent ? '✓ این API قبلاً در Yasin-AI ثبت شده بود.' : '✓ API با موفقیت به Yasin-AI Import شد.');
+}
+
+$('#yasinAiConfigBtn').onclick = configureYasinAI;
 
 $('#autoBtn').onclick = () => {
   autoEnabled = !autoEnabled;
